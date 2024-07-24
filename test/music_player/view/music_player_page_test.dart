@@ -2,7 +2,7 @@ import 'package:airplane_entertainment_system/music_player/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../helpers/pump_experience.dart';
+import '../../helpers/pump_experience.dart';
 
 void main() {
   group('MusicPlayerPage', () {

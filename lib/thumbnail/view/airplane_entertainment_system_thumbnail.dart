@@ -1,4 +1,4 @@
-import 'package:airplane_entertainment_system/demo/demo.dart';
+import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
 import 'package:flutter/material.dart';
 

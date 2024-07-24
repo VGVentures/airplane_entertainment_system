@@ -38,7 +38,7 @@ class MovieCard extends StatelessWidget {
                   const Icon(
                     Icons.play_arrow_rounded,
                     size: 32,
-                  )
+                  ),
                 ],
               ),
             ),

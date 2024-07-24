@@ -1,4 +1,4 @@
-import 'package:airplane_entertainment_system/demo/demo.dart';
+import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,7 @@ class App extends StatelessWidget {
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const AirplaneEntertainmentSystemDemo(),
+      home: const AirplaneEntertainmentSystemScreen(),
     );
   }
 }

@@ -31,28 +31,12 @@ class LeftSideNavigationRail extends StatelessWidget {
               onDestinationSelected: onOptionSelected,
               destinations: const [
                 NavigationRailDestination(
-                  icon: Icon(Icons.airplanemode_active),
+                  icon: Icon(Icons.airplanemode_active_outlined),
                   label: Text('airplanemode_active'),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.headphones),
                   label: Text('headphones'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.play_arrow),
-                  label: Text('play_arrow'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.face),
-                  label: Text('face'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.shopping_bag_outlined),
-                  label: Text('shopping_bag_outlined'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.settings),
-                  label: Text('settings'),
                 ),
               ],
             ),

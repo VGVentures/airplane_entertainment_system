@@ -1,8 +1,8 @@
-import 'package:airplane_entertainment_system/demo/demo.dart';
+import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:flutter/material.dart' hide Image;
 
-class DemoBackground extends StatelessWidget {
-  const DemoBackground({
+class SystemBackground extends StatelessWidget {
+  const SystemBackground({
     required this.page,
     super.key,
   });

@@ -176,7 +176,7 @@ class _RemainingTimeIndicator extends StatelessWidget {
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
-        )
+        ),
       ],
     );
   }

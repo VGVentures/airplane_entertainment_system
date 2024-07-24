@@ -232,9 +232,11 @@ class _ExhaustPainter extends CustomPainter {
     );
   }
 
+  // coverage:ignore-start
   @override
   bool shouldRepaint(covariant _ExhaustPainter oldDelegate) =>
       yOffset != oldDelegate.yOffset || firstOffset != oldDelegate.firstOffset;
+  // coverage:ignore-end
 }
 
 class _ExhaustXOffset {

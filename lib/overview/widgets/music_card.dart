@@ -37,7 +37,7 @@ class MusicCard extends StatelessWidget {
                   const Icon(
                     Icons.headphones,
                     size: 32,
-                  )
+                  ),
                 ],
               ),
             ),

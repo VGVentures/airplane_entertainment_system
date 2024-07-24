@@ -1,8 +1,8 @@
-import 'package:airplane_entertainment_system/demo/demo.dart';
+import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../helpers/helpers.dart';
+import '../../helpers/helpers.dart';
 
 void main() {
   group('TopButtonBar', () {

@@ -11,18 +11,21 @@ class OverviewPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
         vertical: 20,
       ),
-      child: Stack(
-        children: [
-          Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth > 800;
+
+          return Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Expanded(
-                flex: 5,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 80),
-                  child: AirplaneImage(),
+              if (isWide)
+                const Expanded(
+                  flex: 5,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 80),
+                    child: AirplaneImage(),
+                  ),
                 ),
-              ),
               const SizedBox(width: 60),
               Expanded(
                 flex: 4,
@@ -42,25 +45,8 @@ class OverviewPage extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-          Positioned(
-            left: 75,
-            bottom: 50,
-            child: DecoratedBox(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Icon(
-                  Icons.video_camera_back_outlined,
-                  color: Colors.grey.shade800,
-                ),
-              ),
-            ),
-          )
-        ],
+          );
+        },
       ),
     );
   }
@@ -78,11 +64,13 @@ class WelcomeCopy extends StatelessWidget {
         const SizedBox(height: 50),
         Text(
           l10n.welcomeMessage,
+          maxLines: 2,
           style: const TextStyle(
             fontSize: 60,
             fontWeight: FontWeight.w600,
             height: 1,
           ),
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 10),
         Text(

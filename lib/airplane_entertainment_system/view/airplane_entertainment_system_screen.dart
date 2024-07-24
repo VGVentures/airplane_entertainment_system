@@ -1,18 +1,18 @@
-import 'package:airplane_entertainment_system/demo/demo.dart';
+import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/music_player/music_player.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
 import 'package:flutter/material.dart';
 
-class AirplaneEntertainmentSystemDemo extends StatefulWidget {
-  const AirplaneEntertainmentSystemDemo({super.key});
+class AirplaneEntertainmentSystemScreen extends StatefulWidget {
+  const AirplaneEntertainmentSystemScreen({super.key});
 
   @override
-  State<AirplaneEntertainmentSystemDemo> createState() =>
-      _AirplaneEntertainmentSystemDemoState();
+  State<AirplaneEntertainmentSystemScreen> createState() =>
+      _AirplaneEntertainmentSystemScreenState();
 }
 
-class _AirplaneEntertainmentSystemDemoState
-    extends State<AirplaneEntertainmentSystemDemo> {
+class _AirplaneEntertainmentSystemScreenState
+    extends State<AirplaneEntertainmentSystemScreen> {
   int _currentPage = 0;
 
   @override
@@ -23,7 +23,7 @@ class _AirplaneEntertainmentSystemDemoState
           return Stack(
             children: [
               Positioned.fill(
-                child: DemoBackground(
+                child: SystemBackground(
                   page: _currentPage,
                 ),
               ),
@@ -42,7 +42,7 @@ class _AirplaneEntertainmentSystemDemoState
                           },
                         ),
                         Expanded(
-                          child: _DemoPageView(
+                          child: _ContentPageView(
                             pageSize: Size(
                               constraints.maxWidth,
                               constraints.maxHeight,
@@ -80,8 +80,8 @@ class _AirplaneEntertainmentSystemDemoState
   }
 }
 
-class _DemoPageView extends StatefulWidget {
-  const _DemoPageView({
+class _ContentPageView extends StatefulWidget {
+  const _ContentPageView({
     required this.pageSize,
     required this.pageIndex,
   });
@@ -90,24 +90,14 @@ class _DemoPageView extends StatefulWidget {
   final int pageIndex;
 
   @override
-  State<_DemoPageView> createState() => _DemoPageViewState();
+  State<_ContentPageView> createState() => _ContentPageViewState();
 }
 
-class _DemoPageViewState extends State<_DemoPageView>
+class _ContentPageViewState extends State<_ContentPageView>
     with SingleTickerProviderStateMixin {
-  static const _placeholderPage = Center(
-    child: SizedBox.square(
-      dimension: 400,
-      child: Placeholder(),
-    ),
-  );
   static const _pages = [
     OverviewPage(key: Key('overviewPage')),
     MusicPlayerPage(key: Key('musicPlayerPage')),
-    _placeholderPage,
-    _placeholderPage,
-    _placeholderPage,
-    _placeholderPage,
   ];
 
   late final AnimationController _controller = AnimationController(
@@ -135,7 +125,7 @@ class _DemoPageViewState extends State<_DemoPageView>
   }
 
   @override
-  void didUpdateWidget(covariant _DemoPageView oldWidget) {
+  void didUpdateWidget(covariant _ContentPageView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.pageIndex != oldWidget.pageIndex) {

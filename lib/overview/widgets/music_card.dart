@@ -1,3 +1,4 @@
+import 'package:airplane_entertainment_system/generated/assets.gen.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -46,8 +47,7 @@ class MusicCard extends StatelessWidget {
                 topRight: Radius.circular(10),
                 bottomRight: Radius.circular(10),
               ),
-              child: Image.asset(
-                'assets/music.jpg',
+              child: Assets.music.image(
                 fit: BoxFit.fitHeight,
               ),
             ),

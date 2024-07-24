@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:airplane_entertainment_system/generated/assets.gen.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -78,8 +79,7 @@ class WeatherCard extends StatelessWidget {
                     left: 0,
                     child: ImageFiltered(
                       imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
-                      child: Image.asset(
-                        'assets/thunder.png',
+                      child: Assets.thunder.image(
                         width: 140,
                         color: const Color(0x55003366),
                         colorBlendMode: BlendMode.srcIn,
@@ -90,8 +90,7 @@ class WeatherCard extends StatelessWidget {
                   Positioned(
                     right: 20,
                     left: 0,
-                    child: Image.asset(
-                      'assets/thunder.png',
+                    child: Assets.thunder.image(
                       width: 140,
                       fit: BoxFit.contain,
                     ),

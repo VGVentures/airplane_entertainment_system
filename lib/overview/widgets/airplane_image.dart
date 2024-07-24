@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:airplane_entertainment_system/generated/assets.gen.dart';
 import 'package:flutter/material.dart';
 
 class AirplaneImage extends StatelessWidget {
@@ -14,8 +15,7 @@ class AirplaneImage extends StatelessWidget {
       children: [
         ImageFiltered(
           imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Image.asset(
-            'assets/airplane.png',
+          child: Assets.airplane.image(
             fit: BoxFit.contain,
             color: const Color(0x33003366),
             colorBlendMode: BlendMode.srcIn,
@@ -25,8 +25,7 @@ class AirplaneImage extends StatelessWidget {
           imageFilter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
           child: const _ExhaustStream(),
         ),
-        Image.asset(
-          'assets/airplane.png',
+        Assets.airplane.image(
           fit: BoxFit.contain,
         ),
       ],

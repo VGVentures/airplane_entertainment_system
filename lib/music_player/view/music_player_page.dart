@@ -12,9 +12,12 @@ class MusicPlayerPage extends StatelessWidget {
       children: [
         const Expanded(
           flex: 3,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 80, vertical: 100),
-            child: MusicPlayerView(),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 80, vertical: 100),
+              child: MusicPlayerView(),
+            ),
           ),
         ),
         Expanded(
@@ -42,82 +45,7 @@ class MusicPlayerView extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Stack(
-          alignment: Alignment.center,
           children: [
-            const MusicVisualizer(),
-            SizedBox(
-              height: 300,
-              width: 300,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 130,
-              width: 130,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black.withOpacity(0.5),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.pause,
-                    size: 40,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            Column(
-              children: [
-                const SizedBox(height: 56),
-                const Expanded(
-                  child: Center(
-                    child: Row(
-                      children: [
-                        Icon(Icons.first_page_rounded),
-                        Spacer(),
-                        Icon(Icons.last_page_rounded),
-                      ],
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.shuffle),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Card(
-                          elevation: 0,
-                          color: Colors.transparent,
-                          child: Slider(
-                            inactiveColor: Colors.grey,
-                            activeColor: Colors.red,
-                            thumbColor: Colors.white,
-                            value: 0,
-                            onChanged: (_) {},
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Icon(Icons.repeat_rounded),
-                  ],
-                ),
-              ],
-            ),
             Align(
               alignment: Alignment.topLeft,
               child: DecoratedBox(
@@ -136,6 +64,89 @@ class MusicPlayerView extends StatelessWidget {
                 ),
               ),
             ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Icon(Icons.first_page_rounded),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          const MusicVisualizer(),
+                          SizedBox(
+                            height: 300,
+                            width: 300,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 130,
+                            width: 130,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.black.withOpacity(0.5),
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.pause,
+                                  size: 40,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.last_page_rounded),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                Flexible(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.shuffle),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Card(
+                          elevation: 0,
+                          color: Colors.transparent,
+                          child: SizedBox(
+                            width: 360,
+                            child: Slider(
+                              inactiveColor: Colors.grey,
+                              activeColor: Colors.red,
+                              thumbColor: Colors.white,
+                              value: 0,
+                              onChanged: (_) {},
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Icon(Icons.repeat_rounded),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -148,41 +159,45 @@ class MusicMenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 20),
-          child: _MusicMenuHeader(),
-        ),
-        Expanded(
-          child: ShaderMask(
-            shaderCallback: (bounds) => LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.white,
-                Colors.white,
-                Colors.white.withOpacity(0),
-              ],
-              stops: const [0, 0.8, 0.9],
-            ).createShader(bounds),
-            child: ListView.separated(
-              padding: const EdgeInsets.only(bottom: 100),
-              itemBuilder: (context, pos) => _MusicMenuItem(
-                title: _musicItems[pos]['title']!,
-                artist: _musicItems[pos]['artist']!,
-                trackPosition: pos + 1,
-                isPlaying: pos == 0,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 20),
+            child: _MusicMenuHeader(),
+          ),
+          Flexible(
+            child: ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white,
+                  Colors.white,
+                  Colors.white.withOpacity(0),
+                ],
+                stops: const [0, 0.8, 0.9],
+              ).createShader(bounds),
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: const EdgeInsets.only(bottom: 100),
+                itemBuilder: (context, pos) => _MusicMenuItem(
+                  title: _musicItems[pos]['title']!,
+                  artist: _musicItems[pos]['artist']!,
+                  trackPosition: pos + 1,
+                  isPlaying: pos == 0,
+                ),
+                separatorBuilder: (_, __) => const Divider(
+                  color: Colors.transparent,
+                ),
+                itemCount: _musicItems.length,
               ),
-              separatorBuilder: (_, __) => const Divider(
-                color: Colors.transparent,
-              ),
-              itemCount: _musicItems.length,
             ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 }
@@ -211,6 +226,7 @@ class _MusicMenuHeader extends StatelessWidget {
             fontWeight: FontWeight.w600,
             height: 1,
           ),
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 10),
         Text(
@@ -261,10 +277,12 @@ class _MusicMenuItem extends StatelessWidget {
                         Text(
                           title,
                           style: const TextStyle(fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           artist,
                           style: const TextStyle(color: Colors.grey),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),

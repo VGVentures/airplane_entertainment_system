@@ -1,3 +1,4 @@
+import 'package:airplane_entertainment_system/generated/assets.gen.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -14,11 +15,7 @@ class TopButtonBar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Image.asset(
-              'assets/vgv_logo.png',
-              width: 40,
-              height: 40,
-            ),
+            Assets.vgvLogo.image(width: 40, height: 40),
             const SizedBox(width: 24),
             IconButton(
               onPressed: () {},

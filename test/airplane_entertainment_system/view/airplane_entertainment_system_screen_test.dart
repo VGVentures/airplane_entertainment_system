@@ -69,19 +69,23 @@ void main() {
       expect(find.byType(MusicPlayerPage), findsOneWidget);
     });
 
-    testWidgets('shows OverviewPage when icon is selected', (tester) async {
-      await tester.pumpApp(
-        const AirplaneEntertainmentSystemScreen(),
-        layout: AesLayoutData.small,
-      );
+    for (final layout in AesLayoutData.values) {
+      testWidgets(
+          'shows $OverviewPage when icon is '
+          'selected for $layout layout', (tester) async {
+        await tester.pumpApp(
+          const AirplaneEntertainmentSystemScreen(),
+          layout: layout,
+        );
 
-      await tester.tap(find.byIcon(Icons.music_note));
-      await tester.pump(const Duration(milliseconds: 600));
+        await tester.tap(find.byIcon(Icons.music_note));
+        await tester.pump(const Duration(milliseconds: 600));
 
-      await tester.tap(find.byIcon(Icons.airplanemode_active_outlined));
-      await tester.pump(const Duration(milliseconds: 600));
+        await tester.tap(find.byIcon(Icons.airplanemode_active_outlined));
+        await tester.pump(const Duration(milliseconds: 600));
 
-      expect(find.byType(OverviewPage), findsOneWidget);
-    });
+        expect(find.byType(OverviewPage), findsOneWidget);
+      });
+    }
   });
 }

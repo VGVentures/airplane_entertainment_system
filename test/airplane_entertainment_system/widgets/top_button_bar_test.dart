@@ -7,7 +7,7 @@ import '../../helpers/helpers.dart';
 void main() {
   group('TopButtonBar', () {
     testWidgets('contains power button', (tester) async {
-      await tester.pumpExperience(
+      await tester.pumpApp(
         const Scaffold(
           body: TopButtonBar(),
         ),
@@ -18,7 +18,7 @@ void main() {
     });
 
     testWidgets('contains brightness button', (tester) async {
-      await tester.pumpExperience(
+      await tester.pumpApp(
         const Scaffold(
           body: TopButtonBar(),
         ),
@@ -29,7 +29,7 @@ void main() {
     });
 
     testWidgets('contains volume button', (tester) async {
-      await tester.pumpExperience(
+      await tester.pumpApp(
         const Scaffold(
           body: TopButtonBar(),
         ),
@@ -40,7 +40,7 @@ void main() {
     });
 
     testWidgets('contains assist button', (tester) async {
-      await tester.pumpExperience(
+      await tester.pumpApp(
         const Scaffold(
           body: TopButtonBar(),
         ),

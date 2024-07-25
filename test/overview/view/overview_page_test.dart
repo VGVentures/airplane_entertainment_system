@@ -5,9 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../helpers/helpers.dart';
 
 void main() {
-  group('OverviewPage', () {
+  group('$OverviewPage', () {
     testWidgets('contains welcome copy', (tester) async {
-      await tester.pumpExperience(const OverviewPage());
+      await tester.pumpApp(const OverviewPage());
 
       expect(find.byType(WelcomeCopy), findsOneWidget);
     });
@@ -15,7 +15,7 @@ void main() {
     testWidgets('contains flight tracker', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1600, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpExperience(const OverviewPage());
+      await tester.pumpApp(const OverviewPage());
 
       await tester.dragUntilVisible(
         find.byType(FlightTrackingCard),

@@ -1,3 +1,4 @@
+import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:airplane_entertainment_system/music_player/music_player.dart';
 import 'package:flutter/material.dart';
@@ -216,16 +217,13 @@ class _MusicMenuHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.goodVibes,
-          style: const TextStyle(
-            fontSize: 60,
-            fontWeight: FontWeight.w600,
-            height: 1,
-          ),
+          style: AesTextStyles.headlineLarge,
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 10),

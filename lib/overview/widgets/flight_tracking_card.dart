@@ -1,3 +1,4 @@
+import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -130,18 +131,11 @@ class _DepartureOrArrivalTime extends StatelessWidget {
       children: [
         Text(
           time,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AesTextStyles.titleLarge,
         ),
         Text(
           code,
-          style: const TextStyle(
-            color: Colors.grey,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+          style: AesTextStyles.labelLarge,
         ),
       ],
     );
@@ -154,6 +148,7 @@ class _RemainingTimeIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return Column(
       children: [
         DecoratedBox(
@@ -171,11 +166,7 @@ class _RemainingTimeIndicator extends StatelessWidget {
         ),
         Text(
           l10n.remaining,
-          style: const TextStyle(
-            color: Colors.grey,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+          style: AesTextStyles.labelLarge,
         ),
       ],
     );

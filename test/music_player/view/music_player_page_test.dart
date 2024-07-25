@@ -7,7 +7,7 @@ import '../../helpers/pump_experience.dart';
 void main() {
   group('MusicPlayerPage', () {
     testWidgets('contains MusicPlayerPage', (tester) async {
-      await tester.pumpExperience(
+      await tester.pumpApp(
         const Scaffold(
           body: MusicPlayerPage(),
         ),
@@ -18,7 +18,7 @@ void main() {
     });
 
     testWidgets('contains back button', (tester) async {
-      await tester.pumpExperience(
+      await tester.pumpApp(
         const Scaffold(
           body: MusicPlayerPage(),
         ),
@@ -30,7 +30,7 @@ void main() {
     });
 
     testWidgets('contains slider and changing it does nothing', (tester) async {
-      await tester.pumpExperience(
+      await tester.pumpApp(
         const Scaffold(
           body: MusicPlayerPage(),
         ),

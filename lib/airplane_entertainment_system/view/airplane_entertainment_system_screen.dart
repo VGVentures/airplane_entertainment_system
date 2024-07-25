@@ -1,3 +1,4 @@
+import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/music_player/music_player.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
@@ -17,6 +18,19 @@ class _AirplaneEntertainmentSystemScreenState
 
   @override
   Widget build(BuildContext context) {
+    final layout = AesLayout.of(context);
+
+    const destinations = <Destination>[
+      Destination(
+        Icon(Icons.airplanemode_active_outlined),
+        'Home',
+      ),
+      Destination(
+        Icon(Icons.music_note),
+        'Music',
+      ),
+    ];
+
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -33,14 +47,16 @@ class _AirplaneEntertainmentSystemScreenState
                   Expanded(
                     child: Row(
                       children: [
-                        LeftSideNavigationRail(
-                          selectedIndex: _currentPage,
-                          onOptionSelected: (value) {
-                            setState(() {
-                              _currentPage = value;
-                            });
-                          },
-                        ),
+                        if (layout == AesLayoutData.large)
+                          AesNavigationRail(
+                            destinations: destinations,
+                            selectedIndex: _currentPage,
+                            onDestinationSelected: (value) {
+                              setState(() {
+                                _currentPage = value;
+                              });
+                            },
+                          ),
                         Expanded(
                           child: _ContentPageView(
                             pageSize: Size(
@@ -76,6 +92,17 @@ class _AirplaneEntertainmentSystemScreenState
           );
         },
       ),
+      bottomNavigationBar: (layout == AesLayoutData.small)
+          ? AesBottomNavigationBar(
+              destinations: destinations,
+              selectedIndex: _currentPage,
+              onDestinationSelected: (value) {
+                setState(() {
+                  _currentPage = value;
+                });
+              },
+            )
+          : null,
     );
   }
 }

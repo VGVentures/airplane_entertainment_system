@@ -83,15 +83,41 @@ void main() {
         );
       });
 
-      group('is large', () {
+      group('is medium', () {
         testWidgets(
-          'when the width is at the mobile breakpoint',
+          'when the width is smaller than the desktop breakpoint',
           (tester) async {
             late final BuildContext buildContext;
             await tester.pumpWidget(
               MediaQuery(
                 data: const MediaQueryData(
-                  size: Size(AesLayout.mobileBreakpoint, 200),
+                  size: Size(AesLayout.desktopBreakpoint - 1, 200),
+                ),
+                child: AesLayout(
+                  child: Builder(
+                    builder: (context) {
+                      buildContext = context;
+                      return const SizedBox();
+                    },
+                  ),
+                ),
+              ),
+            );
+
+            expect(AesLayout.of(buildContext), equals(AesLayoutData.medium));
+          },
+        );
+      });
+
+      group('is large', () {
+        testWidgets(
+          'when the width is at the desktop breakpoint',
+          (tester) async {
+            late final BuildContext buildContext;
+            await tester.pumpWidget(
+              MediaQuery(
+                data: const MediaQueryData(
+                  size: Size(AesLayout.desktopBreakpoint, 200),
                 ),
                 child: AesLayout(
                   child: Builder(
@@ -109,13 +135,13 @@ void main() {
         );
 
         testWidgets(
-          'when the width is greater than the mobile breakpoint',
+          'when the width is greater than the desktop breakpoint',
           (tester) async {
             late final BuildContext buildContext;
             await tester.pumpWidget(
               MediaQuery(
                 data: const MediaQueryData(
-                  size: Size(AesLayout.mobileBreakpoint + 1, 200),
+                  size: Size(AesLayout.desktopBreakpoint + 1, 200),
                 ),
                 child: AesLayout(
                   child: Builder(
@@ -169,7 +195,7 @@ void main() {
           });
           await tester.pumpAndSettle();
 
-          expect(AesLayout.of(buildContext!), equals(AesLayoutData.large));
+          expect(AesLayout.of(buildContext!), equals(AesLayoutData.medium));
         },
       );
     });

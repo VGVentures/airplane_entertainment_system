@@ -1,3 +1,4 @@
+import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/music_player/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,16 +18,25 @@ void main() {
       expect(find.byType(MusicPlayerView), findsOneWidget);
     });
 
-    testWidgets('contains back button', (tester) async {
+    testWidgets('when screen size is small, player is shown in a bottom sheet',
+        (tester) async {
       await tester.pumpApp(
         const Scaffold(
           body: MusicPlayerPage(),
         ),
+        layout: AesLayoutData.small,
       );
 
-      expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsOneWidget);
+      final playerFinder = find.byType(MusicPlayerView);
+      expect(playerFinder, findsNothing);
 
-      await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
+      final buttonFinder = find.byType(MusicFloatingButton);
+      expect(buttonFinder, findsOneWidget);
+
+      await tester.tap(buttonFinder);
+      await tester.pumpAndSettle();
+
+      expect(playerFinder, findsOneWidget);
     });
 
     testWidgets('contains slider and changing it does nothing', (tester) async {

@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 extension PumpApp on WidgetTester {
-  Future<void> pumpApp(Widget widget, {AesLayoutData? layout}) {
+  Future<void> pumpApp(Widget widget, {AesLayoutData? layout}) async {
+    if (layout == AesLayoutData.large) {
+      await binding.setSurfaceSize(const Size(1600, 1200));
+      addTearDown(() => binding.setSurfaceSize(null));
+    }
+
     return pumpWidget(
       AesLayout(
         data: layout,

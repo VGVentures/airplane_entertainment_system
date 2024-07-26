@@ -12,7 +12,7 @@ class OverviewPage extends StatelessWidget {
 
     return switch (layout) {
       AesLayoutData.small => const _SmallOverviewPage(),
-      AesLayoutData.large => const _LargeOverviewPage(),
+      AesLayoutData.medium || AesLayoutData.large => const _LargeOverviewPage(),
     };
   }
 }
@@ -22,33 +22,8 @@ class _SmallOverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 20,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(width: 60),
-          Expanded(
-            flex: 4,
-            child: ListView(
-              padding: const EdgeInsets.only(right: 80),
-              children: const [
-                WelcomeCopy(),
-                SizedBox(height: 40),
-                FlightTrackingCard(),
-                SizedBox(height: 20),
-                WeatherCard(),
-                SizedBox(height: 20),
-                MusicCard(),
-                SizedBox(height: 20),
-                MovieCard(),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return const DashBoard(
+      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
     );
   }
 }
@@ -58,40 +33,50 @@ class _LargeOverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 20,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+    final showPlane = AesLayout.of(context) == AesLayoutData.large;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (showPlane)
           const Expanded(
-            flex: 5,
             child: Padding(
               padding: EdgeInsets.only(left: 80),
               child: AirplaneImage(),
             ),
           ),
-          const SizedBox(width: 60),
-          Expanded(
-            flex: 4,
-            child: ListView(
-              padding: const EdgeInsets.only(right: 80),
-              children: const [
-                WelcomeCopy(),
-                SizedBox(height: 40),
-                FlightTrackingCard(),
-                SizedBox(height: 20),
-                WeatherCard(),
-                SizedBox(height: 20),
-                MusicCard(),
-                SizedBox(height: 20),
-                MovieCard(),
-              ],
-            ),
+        const SizedBox(width: 80),
+        Expanded(
+          child: DashBoard(
+            padding:
+                const EdgeInsets.symmetric(vertical: 20).copyWith(right: 80),
           ),
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+}
+
+class DashBoard extends StatelessWidget {
+  const DashBoard({super.key, this.padding});
+
+  final EdgeInsets? padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: padding,
+      children: const [
+        WelcomeCopy(),
+        SizedBox(height: 40),
+        FlightTrackingCard(),
+        SizedBox(height: 20),
+        WeatherCard(),
+        SizedBox(height: 20),
+        MusicCard(),
+        SizedBox(height: 20),
+        MovieCard(),
+      ],
     );
   }
 }

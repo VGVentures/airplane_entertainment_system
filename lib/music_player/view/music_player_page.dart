@@ -61,15 +61,12 @@ class _LargeMusicPlayerPage extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: SingleChildScrollView(
-            child: MusicMenuView(
-              scroll: false,
-              padding: EdgeInsets.only(
-                top: 40,
-                right: 80,
-                left: 40,
-                bottom: 100,
-              ),
+          child: MusicMenuView(
+            padding: EdgeInsets.only(
+              top: 40,
+              right: 80,
+              left: 40,
+              bottom: 100,
             ),
           ),
         ),
@@ -287,52 +284,53 @@ class MusicPlayerView extends StatelessWidget {
 }
 
 class MusicMenuView extends StatelessWidget {
-  const MusicMenuView({super.key, this.padding, this.scroll = true});
+  const MusicMenuView({super.key, this.padding});
 
-  final bool scroll;
   final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20) +
-              (padding?.copyWith(bottom: 0) ?? EdgeInsets.zero),
-          child: const _MusicMenuHeader(),
-        ),
-        Flexible(
-          child: ShaderMask(
-            shaderCallback: (bounds) => LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.white,
-                Colors.white,
-                Colors.white.withOpacity(0),
-              ],
-              stops: const [0, 0.85, 0.99],
-            ).createShader(bounds),
-            child: ListView.separated(
-              physics: scroll ? null : const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              padding: padding?.copyWith(top: 0),
-              itemBuilder: (context, pos) => _MusicMenuItem(
-                title: _musicItems[pos]['title']!,
-                artist: _musicItems[pos]['artist']!,
-                trackPosition: pos + 1,
-                isPlaying: pos == 0,
-              ),
-              separatorBuilder: (_, __) => const Divider(
-                color: Colors.transparent,
-              ),
-              itemCount: _musicItems.length,
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.white,
+          Colors.white,
+          Colors.white.withOpacity(0),
+        ],
+        stops: const [0, 0.9, 0.99],
+      ).createShader(bounds),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20) +
+                  (padding?.copyWith(bottom: 0) ?? EdgeInsets.zero),
+              child: const _MusicMenuHeader(),
             ),
-          ),
+            Flexible(
+              child: ListView.separated(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                padding: padding?.copyWith(top: 0),
+                itemBuilder: (context, pos) => _MusicMenuItem(
+                  title: _musicItems[pos]['title']!,
+                  artist: _musicItems[pos]['artist']!,
+                  trackPosition: pos + 1,
+                  isPlaying: pos == 0,
+                ),
+                separatorBuilder: (_, __) => const Divider(
+                  color: Colors.transparent,
+                ),
+                itemCount: _musicItems.length,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

@@ -438,6 +438,9 @@ class _MusicMenuHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final count = context.select<MusicPlayerCubit, int>(
+      (cubit) => cubit.state.tracks.length,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -450,7 +453,7 @@ class _MusicMenuHeader extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          '${l10n.multipleArtists}\n26 ${l10n.songs}',
+          '${l10n.multipleArtists}\n$count ${l10n.songs}',
           style: TextStyle(
             color: Colors.grey.shade800,
           ),

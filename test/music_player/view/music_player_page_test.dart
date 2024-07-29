@@ -1,17 +1,50 @@
 import 'package:aes_ui/aes_ui.dart';
+import 'package:airplane_entertainment_system/music_player/cubit/music_player_cubit.dart';
 import 'package:airplane_entertainment_system/music_player/view/view.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:music_repository/music_repository.dart';
 
 import '../../helpers/pump_experience.dart';
 
+class _MockMusicPlayerCubit extends MockCubit<MusicPlayerState>
+    implements MusicPlayerCubit {}
+
 void main() {
+  const tracks = [
+    MusicTrack(index: 0, title: 'Title0', artist: 'Artist0', path: 'path0'),
+    MusicTrack(index: 1, title: 'Title1', artist: 'Artist1', path: 'path1'),
+  ];
+
   group('MusicPlayerPage', () {
+    late MusicRepository musicRepository;
+    late AudioPlayer audioPlayer;
+
+    setUp(() {
+      musicRepository = MockMusicRepository();
+      when(musicRepository.getTracks).thenReturn(tracks);
+
+      audioPlayer = MockAudioPlayer();
+      when(() => audioPlayer.audioSource).thenReturn(HlsAudioSource(Uri()));
+      when(() => audioPlayer.positionStream)
+          .thenAnswer((_) => const Stream.empty());
+      when(() => audioPlayer.playingStream)
+          .thenAnswer((_) => const Stream.empty());
+      when(() => audioPlayer.currentIndexStream)
+          .thenAnswer((_) => const Stream.empty());
+    });
+
     testWidgets('contains MusicPlayerPage', (tester) async {
       await tester.pumpApp(
         const Scaffold(
           body: MusicPlayerPage(),
         ),
+        musicRepository: musicRepository,
+        audioPlayer: audioPlayer,
       );
 
       expect(find.byType(MusicMenuView), findsOneWidget);
@@ -20,11 +53,15 @@ void main() {
 
     testWidgets('when screen size is small, player is shown in a bottom sheet',
         (tester) async {
+      when(() => audioPlayer.currentIndexStream)
+          .thenAnswer((_) => Stream.value(0));
       await tester.pumpApp(
         const Scaffold(
           body: MusicPlayerPage(),
         ),
         layout: AesLayoutData.small,
+        musicRepository: musicRepository,
+        audioPlayer: audioPlayer,
       );
 
       final playerFinder = find.byType(MusicPlayerView);
@@ -38,17 +75,113 @@ void main() {
 
       expect(playerFinder, findsOneWidget);
     });
+  });
 
-    testWidgets('contains slider and changing it does nothing', (tester) async {
-      await tester.pumpApp(
-        const Scaffold(
-          body: MusicPlayerPage(),
+  group('MusicPlayerView', () {
+    late MusicPlayerCubit cubit;
+
+    setUp(() {
+      cubit = _MockMusicPlayerCubit();
+      when(() => cubit.state).thenReturn(
+        const MusicPlayerState(tracks: tracks),
+      );
+    });
+
+    Widget subject() {
+      return BlocProvider<MusicPlayerCubit>.value(
+        value: cubit,
+        child: const Material(
+          child: MusicPlayerView(),
         ),
       );
+    }
 
-      expect(find.byType(Slider), findsOneWidget);
-      final slider = tester.widget<Slider>(find.byType(Slider));
-      slider.onChanged!(0);
+    testWidgets(
+      'calls [MusicPlayerCubit.previous] when previous track button is pressed',
+      (tester) async {
+        await tester.pumpApp(subject());
+
+        await tester.tap(find.byIcon(Icons.first_page_rounded));
+        verify(cubit.previous).called(1);
+      },
+    );
+
+    testWidgets(
+      'calls [MusicPlayerCubit.next] when next track button is pressed',
+      (tester) async {
+        await tester.pumpApp(subject());
+
+        await tester.tap(find.byIcon(Icons.last_page_rounded));
+        verify(cubit.next).called(1);
+      },
+    );
+
+    testWidgets(
+      'calls [MusicPlayerCubit.togglePlayPause] when play button is pressed',
+      (tester) async {
+        await tester.pumpApp(subject());
+
+        await tester.tap(find.byIcon(Icons.play_arrow));
+        verify(cubit.togglePlayPause).called(1);
+      },
+    );
+
+    testWidgets(
+      'calls [MusicPlayerCubit.seek] when slider is moved',
+      (tester) async {
+        await tester.pumpApp(subject());
+
+        await tester.drag(find.byType(Slider), const Offset(10, 0));
+        verify(() => cubit.seek(any())).called(greaterThan(0));
+      },
+    );
+
+    testWidgets(
+      'calls [MusicPlayerCubit.toggleLoop] when repeat button is pressed',
+      (tester) async {
+        await tester.pumpApp(subject());
+
+        await tester.tap(find.byIcon(Icons.repeat_rounded));
+        verify(cubit.toggleLoop).called(1);
+      },
+    );
+
+    testWidgets(
+      'calls [MusicPlayerCubit.toggleShuffle] when shuffle button is pressed',
+      (tester) async {
+        await tester.pumpApp(subject());
+
+        await tester.tap(find.byIcon(Icons.shuffle));
+        verify(cubit.toggleShuffle).called(1);
+      },
+    );
+  });
+
+  group('MusicMenuView', () {
+    late MusicPlayerCubit cubit;
+
+    setUp(() {
+      cubit = _MockMusicPlayerCubit();
+      when(() => cubit.state).thenReturn(
+        const MusicPlayerState(tracks: tracks),
+      );
     });
+
+    Widget subject() {
+      return BlocProvider<MusicPlayerCubit>.value(
+        value: cubit,
+        child: const Material(child: MusicMenuView()),
+      );
+    }
+
+    testWidgets(
+      'calls [MusicPlayerCubit.playTrack] when track is selected',
+      (tester) async {
+        await tester.pumpApp(subject());
+
+        await tester.tap(find.text('Title0'));
+        verify(() => cubit.playTrack(tracks[0])).called(1);
+      },
+    );
   });
 }

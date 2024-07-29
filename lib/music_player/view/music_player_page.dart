@@ -2,6 +2,8 @@ import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:airplane_entertainment_system/music_player/music_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:music_repository/music_repository.dart';
 
 class MusicPlayerPage extends StatelessWidget {
   const MusicPlayerPage({super.key});
@@ -10,12 +12,22 @@ class MusicPlayerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final layout = AesLayout.of(context);
 
-    return switch (layout) {
-      AesLayoutData.small => const _SmallMusicPlayerPage(),
-      AesLayoutData.medium ||
-      AesLayoutData.large =>
-        const _LargeMusicPlayerPage(),
-    };
+    return BlocProvider(
+      create: (_) => MusicPlayerCubit(
+        musicRepository: context.read(),
+        player: context.read(),
+      )..initialize(),
+      child: Builder(
+        builder: (context) {
+          return switch (layout) {
+            AesLayoutData.small => const _SmallMusicPlayerPage(),
+            AesLayoutData.medium ||
+            AesLayoutData.large =>
+              const _LargeMusicPlayerPage(),
+          };
+        },
+      ),
+    );
   }
 }
 
@@ -85,7 +97,7 @@ class MusicFloatingButton extends StatelessWidget {
       children: [
         Transform.scale(
           scale: 0.2,
-          child: const MusicVisualizer(),
+          child: const _PlayingMusicVisualizer(),
         ),
         SizedBox(
           height: 50,
@@ -111,7 +123,10 @@ class MusicFloatingButton extends StatelessWidget {
                   constraints: const BoxConstraints(
                     maxHeight: 380,
                   ),
-                  builder: (_) => const _MusicBottomSheet(),
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<MusicPlayerCubit>(),
+                    child: const _MusicBottomSheet(),
+                  ),
                 );
               },
               child: Center(
@@ -147,19 +162,25 @@ class _MusicBottomSheet extends StatelessWidget {
                   child: MusicPlayerView(),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _musicItems[0]['title']!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Text(' - '),
-                  Text(_musicItems[0]['artist']!),
-                ],
+              BlocSelector<MusicPlayerCubit, MusicPlayerState, MusicTrack?>(
+                selector: (state) => state.currentTrack,
+                builder: (context, track) {
+                  if (track == null) return const SizedBox();
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        track.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Text(' - '),
+                      Text(track.artist),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -200,13 +221,17 @@ class MusicPlayerView extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(Icons.first_page_rounded),
+                    IconButton(
+                      onPressed: () =>
+                          context.read<MusicPlayerCubit>().previous(),
+                      icon: const Icon(Icons.first_page_rounded),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          const MusicVisualizer(),
+                          const _PlayingMusicVisualizer(),
                           SizedBox(
                             height: 300,
                             width: 300,
@@ -233,11 +258,24 @@ class MusicPlayerView extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: Colors.black.withOpacity(0.5),
                               ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.pause,
-                                  size: 40,
-                                  color: Colors.white,
+                              child: Center(
+                                child: InkWell(
+                                  onTap: () => context
+                                      .read<MusicPlayerCubit>()
+                                      .togglePlayPause(),
+                                  child: BlocSelector<MusicPlayerCubit,
+                                      MusicPlayerState, bool>(
+                                    selector: (state) => state.isPlaying,
+                                    builder: (context, isPlaying) {
+                                      return Icon(
+                                        isPlaying
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                        size: 40,
+                                        color: Colors.white,
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
@@ -245,14 +283,28 @@ class MusicPlayerView extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Icon(Icons.last_page_rounded),
+                    IconButton(
+                      onPressed: () => context.read<MusicPlayerCubit>().next(),
+                      icon: const Icon(Icons.last_page_rounded),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 40),
                 Flexible(
                   child: Row(
                     children: [
-                      const Icon(Icons.shuffle),
+                      BlocSelector<MusicPlayerCubit, MusicPlayerState, bool>(
+                        selector: (state) => state.isShuffle,
+                        builder: (context, enabled) {
+                          return IconButton(
+                            color: enabled ? Colors.red : null,
+                            onPressed: () => context
+                                .read<MusicPlayerCubit>()
+                                .toggleShuffle(),
+                            icon: const Icon(Icons.shuffle),
+                          );
+                        },
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Card(
@@ -260,17 +312,35 @@ class MusicPlayerView extends StatelessWidget {
                           color: Colors.transparent,
                           child: SizedBox(
                             width: 360,
-                            child: Slider(
-                              inactiveColor: Colors.grey,
-                              activeColor: Colors.red,
-                              thumbColor: Colors.white,
-                              value: 0,
-                              onChanged: (_) {},
+                            child: BlocSelector<MusicPlayerCubit,
+                                MusicPlayerState, double>(
+                              selector: (state) => state.progress,
+                              builder: (context, progress) {
+                                return Slider(
+                                  inactiveColor: Colors.grey,
+                                  activeColor: Colors.red,
+                                  thumbColor: Colors.white,
+                                  value: progress,
+                                  onChanged: (value) => context
+                                      .read<MusicPlayerCubit>()
+                                      .seek(value),
+                                );
+                              },
                             ),
                           ),
                         ),
                       ),
-                      const Icon(Icons.repeat_rounded),
+                      BlocSelector<MusicPlayerCubit, MusicPlayerState, bool>(
+                        selector: (state) => state.isLoop,
+                        builder: (context, enabled) {
+                          return IconButton(
+                            color: enabled ? Colors.red : null,
+                            onPressed: () =>
+                                context.read<MusicPlayerCubit>().toggleLoop(),
+                            icon: const Icon(Icons.repeat_rounded),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -280,6 +350,18 @@ class MusicPlayerView extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _PlayingMusicVisualizer extends StatelessWidget {
+  const _PlayingMusicVisualizer();
+
+  @override
+  Widget build(BuildContext context) {
+    final isPlaying = context.select<MusicPlayerCubit, bool>(
+      (cubit) => cubit.state.isPlaying,
+    );
+    return MusicVisualizer(isActive: isPlaying);
   }
 }
 
@@ -312,20 +394,35 @@ class MusicMenuView extends StatelessWidget {
               child: const _MusicMenuHeader(),
             ),
             Flexible(
-              child: ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: padding?.copyWith(top: 0),
-                itemBuilder: (context, pos) => _MusicMenuItem(
-                  title: _musicItems[pos]['title']!,
-                  artist: _musicItems[pos]['artist']!,
-                  trackPosition: pos + 1,
-                  isPlaying: pos == 0,
+              child: BlocSelector<MusicPlayerCubit, MusicPlayerState,
+                  (List<MusicTrack>, MusicTrack?, bool)>(
+                selector: (state) => (
+                  state.tracks,
+                  state.currentTrack,
+                  state.isPlaying,
                 ),
-                separatorBuilder: (_, __) => const Divider(
-                  color: Colors.transparent,
-                ),
-                itemCount: _musicItems.length,
+                builder: (context, state) {
+                  final (tracks, current, isPlaying) = state;
+                  return ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    padding: padding?.copyWith(top: 0),
+                    itemBuilder: (context, pos) {
+                      final track = tracks[pos];
+                      return _MusicMenuItem(
+                        track: track,
+                        isCurrent: track == current,
+                        isPlaying: isPlaying,
+                        onTap: () =>
+                            context.read<MusicPlayerCubit>().playTrack(track),
+                      );
+                    },
+                    separatorBuilder: (_, __) => const Divider(
+                      color: Colors.transparent,
+                    ),
+                    itemCount: tracks.length,
+                  );
+                },
               ),
             ),
           ],
@@ -334,14 +431,6 @@ class MusicMenuView extends StatelessWidget {
     );
   }
 }
-
-const _musicItems = [
-  {'title': 'Starlight', 'artist': 'Muse'},
-  {'title': 'E a verdade', 'artist': 'Riles'},
-  {'title': 'Dance Monkey', 'artist': 'Tones and I'},
-  {'title': 'La Campanella', 'artist': 'Chopin'},
-  {'title': 'Calm Down', 'artist': 'Rema'},
-];
 
 class _MusicMenuHeader extends StatelessWidget {
   const _MusicMenuHeader();
@@ -373,66 +462,71 @@ class _MusicMenuHeader extends StatelessWidget {
 
 class _MusicMenuItem extends StatelessWidget {
   const _MusicMenuItem({
-    required this.title,
-    required this.artist,
-    required this.trackPosition,
+    required this.track,
+    this.onTap,
+    this.isCurrent = false,
     this.isPlaying = false,
   });
 
-  final String title;
-  final String artist;
-  final int trackPosition;
+  final MusicTrack track;
+  final bool isCurrent;
   final bool isPlaying;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return SizedBox(
-      height: 90,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(color: Colors.white),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 20),
-                    child: Text(trackPosition.toString()),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          artist,
-                          style: const TextStyle(color: Colors.grey),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+    return InkWell(
+      onTap: onTap,
+      child: SizedBox(
+        height: 90,
+        child: DecoratedBox(
+          decoration: const BoxDecoration(color: Colors.white),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Text((track.index + 1).toString()),
                     ),
-                  ),
-                  Icon(
-                    isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                  ),
-                ],
-              ),
-            ),
-            if (isPlaying)
-              SizedBox(
-                height: size.height,
-                width: 5,
-                child: const DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.red),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            track.title,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            track.artist,
+                            style: const TextStyle(color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      isCurrent && isPlaying
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
+                    ),
+                  ],
                 ),
               ),
-          ],
+              if (isCurrent)
+                SizedBox(
+                  height: size.height,
+                  width: 5,
+                  child: const DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.red),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

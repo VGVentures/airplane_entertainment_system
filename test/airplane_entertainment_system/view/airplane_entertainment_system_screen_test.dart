@@ -4,11 +4,31 @@ import 'package:airplane_entertainment_system/music_player/music_player.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:music_repository/music_repository.dart';
 
 import '../../helpers/helpers.dart';
 
 void main() {
   group('$AirplaneEntertainmentSystemScreen', () {
+    late MusicRepository musicRepository;
+    late AudioPlayer audioPlayer;
+
+    setUp(() {
+      musicRepository = MockMusicRepository();
+      when(musicRepository.getTracks).thenReturn(const []);
+
+      audioPlayer = MockAudioPlayer();
+      when(() => audioPlayer.audioSource).thenReturn(HlsAudioSource(Uri()));
+      when(() => audioPlayer.positionStream)
+          .thenAnswer((_) => const Stream.empty());
+      when(() => audioPlayer.playingStream)
+          .thenAnswer((_) => const Stream.empty());
+      when(() => audioPlayer.currentIndexStream)
+          .thenAnswer((_) => const Stream.empty());
+    });
+
     testWidgets('shows $AesNavigationRail on large screens', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1600, 1200));
       await tester.pumpApp(
@@ -60,6 +80,8 @@ void main() {
       await tester.pumpApp(
         const AirplaneEntertainmentSystemScreen(),
         layout: AesLayoutData.small,
+        musicRepository: musicRepository,
+        audioPlayer: audioPlayer,
       );
 
       await tester.tap(find.byIcon(Icons.music_note));
@@ -76,6 +98,8 @@ void main() {
         await tester.pumpApp(
           const AirplaneEntertainmentSystemScreen(),
           layout: layout,
+          musicRepository: musicRepository,
+          audioPlayer: audioPlayer,
         );
 
         await tester.tap(find.byIcon(Icons.music_note));

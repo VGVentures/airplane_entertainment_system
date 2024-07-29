@@ -1,10 +1,23 @@
 import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:music_repository/music_repository.dart';
+
+class MockMusicRepository extends Mock implements MusicRepository {}
+
+class MockAudioPlayer extends Mock implements AudioPlayer {}
 
 extension PumpApp on WidgetTester {
-  Future<void> pumpApp(Widget widget, {AesLayoutData? layout}) async {
+  Future<void> pumpApp(
+    Widget widget, {
+    AesLayoutData? layout,
+    MusicRepository? musicRepository,
+    AudioPlayer? audioPlayer,
+  }) async {
     if (layout == AesLayoutData.large) {
       await binding.setSurfaceSize(const Size(1600, 1200));
       addTearDown(() => binding.setSurfaceSize(null));
@@ -13,10 +26,20 @@ extension PumpApp on WidgetTester {
     return pumpWidget(
       AesLayout(
         data: layout,
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: widget,
+        child: MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<MusicRepository>(
+              create: (context) => musicRepository ?? MockMusicRepository(),
+            ),
+            RepositoryProvider<AudioPlayer>(
+              create: (context) => audioPlayer ?? MockAudioPlayer(),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: widget,
+          ),
         ),
       ),
     );

@@ -53,8 +53,13 @@ class TopButtonBar extends StatelessWidget {
                   letterSpacing: 1.2,
                 ),
               ),
-              icon: const Icon(Icons.support),
-              label: Text(context.l10n.assistButton),
+              icon: const Icon(Icons.support, color: Colors.white),
+              label: Text(
+                context.l10n.assistButton,
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             ),
           ],
         ),

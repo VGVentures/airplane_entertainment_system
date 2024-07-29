@@ -41,53 +41,56 @@ class _AirplaneEntertainmentSystemScreenState
                   page: _currentPage,
                 ),
               ),
-              Column(
-                children: [
-                  const TopButtonBar(),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        if (layout == AesLayoutData.large)
-                          AesNavigationRail(
-                            destinations: destinations,
-                            selectedIndex: _currentPage,
-                            onDestinationSelected: (value) {
-                              setState(() {
-                                _currentPage = value;
-                              });
-                            },
-                          ),
-                        Expanded(
-                          child: _ContentPageView(
-                            pageSize: Size(
-                              constraints.maxWidth,
-                              constraints.maxHeight,
+              SafeArea(
+                child: Column(
+                  children: [
+                    const TopButtonBar(),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          if (layout != AesLayoutData.small)
+                            AesNavigationRail(
+                              destinations: destinations,
+                              selectedIndex: _currentPage,
+                              onDestinationSelected: (value) {
+                                setState(() {
+                                  _currentPage = value;
+                                });
+                              },
                             ),
-                            pageIndex: _currentPage,
+                          Expanded(
+                            child: _ContentPageView(
+                              pageSize: Size(
+                                constraints.maxWidth,
+                                constraints.maxHeight,
+                              ),
+                              pageIndex: _currentPage,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               // Display clouds over the airplane only on the first screen.
-              Positioned.fill(
-                left: 80,
-                right: constraints.maxWidth * 0.4,
-                child: IgnorePointer(
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 600),
-                    opacity: _currentPage == 0 ? 0.8 : 0,
-                    child: const Clouds(
-                      key: Key('foregroundClouds'),
-                      count: 3,
-                      averageScale: 0.25,
-                      averageVelocity: 2,
+              if (layout == AesLayoutData.large)
+                Positioned.fill(
+                  left: 80,
+                  right: constraints.maxWidth * 0.4,
+                  child: IgnorePointer(
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 600),
+                      opacity: _currentPage == 0 ? 0.8 : 0,
+                      child: const Clouds(
+                        key: Key('foregroundClouds'),
+                        count: 3,
+                        averageScale: 0.25,
+                        averageVelocity: 2,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           );
         },
@@ -173,12 +176,17 @@ class _ContentPageViewState extends State<_ContentPageView>
 
   @override
   Widget build(BuildContext context) {
-    final pageOffset = widget.pageSize.height / 4;
+    final isSmall = AesLayout.of(context) == AesLayoutData.small;
+    final pageSize = widget.pageSize;
+    final pageSide = isSmall ? pageSize.width : pageSize.width.hashCode;
+    final pageOffset = pageSide / 4;
+    final axis = isSmall ? Axis.horizontal : Axis.vertical;
 
     return Stack(
       children: [
         if (_previousPage != _currentPage)
           _PositionedFadeTransition(
+            axis: axis,
             positionAnimation: _controller.drive(
               CurveTween(
                 curve: Curves.easeInOut,
@@ -200,6 +208,7 @@ class _ContentPageViewState extends State<_ContentPageView>
             child: _pages[_previousPage],
           ),
         _PositionedFadeTransition(
+          axis: axis,
           positionAnimation: _controller.drive(
             CurveTween(
               curve: Curves.easeInOut,
@@ -229,6 +238,7 @@ class _PositionedFadeTransition extends StatelessWidget {
     required this.opacityAnimation,
     required this.pageSize,
     required this.child,
+    required this.axis,
     this.beginOffset = 0,
     this.endOffset = 0,
   });
@@ -239,15 +249,21 @@ class _PositionedFadeTransition extends StatelessWidget {
   final Widget child;
   final double beginOffset;
   final double endOffset;
+  final Axis axis;
 
   @override
   Widget build(BuildContext context) {
+    final begin = axis == Axis.horizontal
+        ? RelativeRect.fromLTRB(beginOffset, 0, -beginOffset, 0)
+        : RelativeRect.fromLTRB(0, beginOffset, 0, -beginOffset);
+
+    final end = axis == Axis.horizontal
+        ? RelativeRect.fromLTRB(endOffset, 0, -endOffset, 0)
+        : RelativeRect.fromLTRB(0, endOffset, 0, -endOffset);
+
     return PositionedTransition(
       rect: positionAnimation.drive(
-        RelativeRectTween(
-          begin: RelativeRect.fromLTRB(0, beginOffset, 0, -beginOffset),
-          end: RelativeRect.fromLTRB(0, endOffset, 0, -endOffset),
-        ),
+        RelativeRectTween(begin: begin, end: end),
       ),
       child: FadeTransition(
         key: ValueKey<Key?>(child.key),

@@ -8,11 +8,50 @@ class MusicPlayerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final layout = AesLayout.of(context);
+
+    return switch (layout) {
+      AesLayoutData.small => const _SmallMusicPlayerPage(),
+      AesLayoutData.medium ||
+      AesLayoutData.large =>
+        const _LargeMusicPlayerPage(),
+    };
+  }
+}
+
+class _SmallMusicPlayerPage extends StatelessWidget {
+  const _SmallMusicPlayerPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Stack(
+      children: [
+        MusicMenuView(
+          padding: EdgeInsets.only(
+            right: 20,
+            left: 20,
+            bottom: 60,
+          ),
+        ),
+        Positioned(
+          bottom: 20,
+          right: 30,
+          child: MusicFloatingButton(),
+        ),
+      ],
+    );
+  }
+}
+
+class _LargeMusicPlayerPage extends StatelessWidget {
+  const _LargeMusicPlayerPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        const Expanded(
-          flex: 3,
+        Expanded(
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Padding(
@@ -22,11 +61,118 @@ class MusicPlayerPage extends StatelessWidget {
           ),
         ),
         Expanded(
-          flex: 2,
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20).copyWith(top: 100),
-            child: const MusicMenuView(),
+          child: MusicMenuView(
+            padding: EdgeInsets.only(
+              top: 40,
+              right: 80,
+              left: 40,
+              bottom: 100,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class MusicFloatingButton extends StatelessWidget {
+  const MusicFloatingButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Transform.scale(
+          scale: 0.2,
+          child: const MusicVisualizer(),
+        ),
+        SizedBox(
+          height: 50,
+          width: 50,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: InkWell(
+              onTap: () {
+                showBottomSheet(
+                  backgroundColor: Colors.white,
+                  context: context,
+                  constraints: const BoxConstraints(
+                    maxHeight: 380,
+                  ),
+                  builder: (_) => const _MusicBottomSheet(),
+                );
+              },
+              child: Center(
+                child: Icon(
+                  Icons.play_circle,
+                  size: 32,
+                  color: Colors.black.withOpacity(0.5),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MusicBottomSheet extends StatelessWidget {
+  const _MusicBottomSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(40).copyWith(bottom: 0),
+          child: Column(
+            children: [
+              const SizedBox(
+                width: 350,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: MusicPlayerView(),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _musicItems[0]['title']!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(' - '),
+                  Text(_musicItems[0]['artist']!),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: 10,
+          right: 10,
+          child: IconButton(
+            onPressed: Navigator.of(context).pop,
+            icon: const Icon(
+              Icons.close_rounded,
+              size: 30,
+            ),
           ),
         ),
       ],
@@ -47,24 +193,6 @@ class MusicPlayerView extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: Stack(
           children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
-                child: IconButton(
-                  padding: const EdgeInsets.all(12),
-                  onPressed: () {},
-                  iconSize: 16,
-                  icon: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-            ),
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -156,34 +284,38 @@ class MusicPlayerView extends StatelessWidget {
 }
 
 class MusicMenuView extends StatelessWidget {
-  const MusicMenuView({super.key});
+  const MusicMenuView({super.key, this.padding});
+
+  final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(bottom: 20),
-            child: _MusicMenuHeader(),
-          ),
-          Flexible(
-            child: ShaderMask(
-              shaderCallback: (bounds) => LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white,
-                  Colors.white,
-                  Colors.white.withOpacity(0),
-                ],
-                stops: const [0, 0.8, 0.9],
-              ).createShader(bounds),
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.white,
+          Colors.white,
+          Colors.white.withOpacity(0),
+        ],
+        stops: const [0, 0.9, 0.99],
+      ).createShader(bounds),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20) +
+                  (padding?.copyWith(bottom: 0) ?? EdgeInsets.zero),
+              child: const _MusicMenuHeader(),
+            ),
+            Flexible(
               child: ListView.separated(
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                padding: const EdgeInsets.only(bottom: 100),
+                padding: padding?.copyWith(top: 0),
                 itemBuilder: (context, pos) => _MusicMenuItem(
                   title: _musicItems[pos]['title']!,
                   artist: _musicItems[pos]['artist']!,
@@ -196,8 +328,8 @@ class MusicMenuView extends StatelessWidget {
                 itemCount: _musicItems.length,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -225,6 +357,7 @@ class _MusicMenuHeader extends StatelessWidget {
           l10n.goodVibes,
           style: AesTextStyles.headlineLarge,
           overflow: TextOverflow.ellipsis,
+          maxLines: 2,
         ),
         const SizedBox(height: 10),
         Text(

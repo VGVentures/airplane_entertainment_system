@@ -9,17 +9,26 @@ enum AesLayoutData {
   /// Typically used for mobile devices.
   small,
 
+  /// A medium layout.
+  ///
+  /// Typically used for tablets.
+  medium,
+
   /// A large layout.
   ///
-  /// Typically used for tablets and desktops.
+  /// Typically used for desktops.
   large;
 
   /// Derives the layout from the given [windowSize].
   static AesLayoutData _derive(Size windowSize) {
-    return windowSize.width < windowSize.height ||
-            windowSize.width < AesLayout.mobileBreakpoint
-        ? AesLayoutData.small
-        : AesLayoutData.large;
+    if (windowSize.width < windowSize.height ||
+        windowSize.width < AesLayout.mobileBreakpoint) {
+      return AesLayoutData.small;
+    }
+    if (windowSize.width < AesLayout.desktopBreakpoint) {
+      return AesLayoutData.medium;
+    }
+    return AesLayoutData.large;
   }
 }
 
@@ -40,8 +49,13 @@ class AesLayout extends StatelessWidget {
     super.key,
   });
 
-  /// The threshold width at which the layout should change.
+  /// The threshold width at which the layout should change between small and
+  /// medium.
   static const double mobileBreakpoint = 600;
+
+  /// The threshold width at which the layout should change between medium and
+  /// large.
+  static const double desktopBreakpoint = 1000;
 
   /// The layout to provide to the child.
   ///

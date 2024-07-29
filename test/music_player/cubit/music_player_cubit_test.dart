@@ -158,6 +158,13 @@ void main() {
       );
 
       blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'calls [audioPlayer.play]',
+        build: build,
+        act: (cubit) => cubit.playTrack(tracks[0]),
+        verify: (_) => verify(audioPlayer.play).called(1),
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
         'calls [audioPlayer.pause] when the track is already playing',
         build: build,
         seed: () => const MusicPlayerState(
@@ -214,17 +221,6 @@ void main() {
             const Duration(seconds: 5),
           ),
         ).called(1),
-      );
-
-      blocTest<MusicPlayerCubit, MusicPlayerState>(
-        'calls [audioPlayer.play]',
-        build: build,
-        seed: () => const MusicPlayerState(
-          tracks: tracks,
-          currentTrackIndex: 0,
-        ),
-        act: (cubit) => cubit.seek(0.5),
-        verify: (_) => verify(audioPlayer.play).called(1),
       );
     });
 

@@ -1,9 +1,15 @@
-import 'package:airplane_entertainment_system/overview/widgets/weather_card.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:weather_repository/weather_repository.dart';
 
 import '../../helpers/pump_experience.dart';
 import '../../helpers/tester_l10n.dart';
+
+class _MockWeatherCubit extends MockCubit<WeatherInfo?>
+    implements WeatherCubit {}
 
 void main() {
   group('WeatherCard', () {
@@ -26,10 +32,20 @@ void main() {
       ),
     ];
 
+    late WeatherCubit weatherCubit;
+
+    setUp(() {
+      weatherCubit = _MockWeatherCubit();
+    });
+
     for (final info in weatherInfo) {
       testWidgets('renders a ${info.condition} weather card', (tester) async {
+        when(() => weatherCubit.state).thenReturn(info);
         await tester.pumpApp(
-          WeatherCard(info: info),
+          BlocProvider.value(
+            value: weatherCubit,
+            child: const WeatherCardView(),
+          ),
         );
 
         expect(find.text('${info.temperature}°'), findsOneWidget);

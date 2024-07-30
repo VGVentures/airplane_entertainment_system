@@ -1,8 +1,8 @@
 import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OverviewPage extends StatelessWidget {
   const OverviewPage({super.key});
@@ -11,17 +11,10 @@ class OverviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final layout = AesLayout.of(context);
 
-    return BlocProvider(
-      create: (_) => OverviewCubit(
-        weatherRepository: context.read(),
-      )..initialize(),
-      child: switch (layout) {
-        AesLayoutData.small => const _SmallOverviewPage(),
-        AesLayoutData.medium ||
-        AesLayoutData.large =>
-          const _LargeOverviewPage(),
-      },
-    );
+    return switch (layout) {
+      AesLayoutData.small => const _SmallOverviewPage(),
+      AesLayoutData.medium || AesLayoutData.large => const _LargeOverviewPage(),
+    };
   }
 }
 
@@ -72,21 +65,18 @@ class DashBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final weatherInfo =
-        context.select((OverviewCubit cubit) => cubit.state.weatherInfo);
-
     return ListView(
       padding: padding,
-      children: [
-        const WelcomeCopy(),
-        const SizedBox(height: 40),
-        const FlightTrackingCard(),
-        const SizedBox(height: 20),
-        WeatherCard(info: weatherInfo),
-        const SizedBox(height: 20),
-        const MusicCard(),
-        const SizedBox(height: 20),
-        const MovieCard(),
+      children: const [
+        WelcomeCopy(),
+        SizedBox(height: 40),
+        FlightTrackingCard(),
+        SizedBox(height: 20),
+        WeatherCard(),
+        SizedBox(height: 20),
+        MusicCard(),
+        SizedBox(height: 20),
+        MovieCard(),
       ],
     );
   }

@@ -1,4 +1,4 @@
-import 'package:airplane_entertainment_system/overview/cubit/overview_cubit.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -7,7 +7,7 @@ import 'package:weather_repository/weather_repository.dart';
 import '../../helpers/pump_experience.dart';
 
 void main() {
-  group('OverviewCubit', () {
+  group('WeatherCubit', () {
     late WeatherRepository weatherRepository;
 
     setUp(() {
@@ -23,20 +23,17 @@ void main() {
       );
     });
 
-    OverviewCubit build() => OverviewCubit(
+    WeatherCubit build() => WeatherCubit(
           weatherRepository: weatherRepository,
         );
 
-    blocTest<OverviewCubit, OverviewState>(
-      'initial state is default [OverviewState]',
+    blocTest<WeatherCubit, WeatherInfo?>(
+      'initial state is null',
       build: build,
-      verify: (cubit) => expect(
-        cubit.state,
-        const OverviewState(),
-      ),
+      verify: (cubit) => expect(cubit.state, isNull),
     );
 
-    blocTest<OverviewCubit, OverviewState>(
+    blocTest<WeatherCubit, WeatherInfo?>(
       'updates [OverviewState.weatherInfo] when weather changes',
       setUp: () {
         when(() => weatherRepository.weatherStream).thenAnswer(
@@ -52,26 +49,22 @@ void main() {
       },
       build: build,
       expect: () => [
-        const OverviewState(
-          weatherInfo: WeatherInfo(
-            temperature: 68,
-            condition: WeatherCondition.rainy,
-          ),
+        const WeatherInfo(
+          temperature: 68,
+          condition: WeatherCondition.rainy,
         ),
       ],
     );
 
     group('initialize', () {
-      blocTest<OverviewCubit, OverviewState>(
+      blocTest<WeatherCubit, WeatherInfo?>(
         'loads initial weather info',
         build: build,
         act: (cubit) => cubit.initialize(),
         expect: () => [
-          const OverviewState(
-            weatherInfo: WeatherInfo(
-              temperature: 70,
-              condition: WeatherCondition.clear,
-            ),
+          const WeatherInfo(
+            temperature: 70,
+            condition: WeatherCondition.clear,
           ),
         ],
       );

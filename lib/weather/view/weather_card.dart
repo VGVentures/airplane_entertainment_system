@@ -26,40 +26,43 @@ class WeatherCardView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    final info = context.select((WeatherCubit cubit) => cubit.state);
-    final temperature = '${info?.temperature ?? '--'}°';
-    final label = info?.conditionLabel(l10n) ?? '';
-    final gradient = info?.gradient ?? _clearWeatherGradient;
-    final imageAsset = info?.imageAsset;
-
     return SizedBox(
       height: 200,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: _WeatherDetails(
-                temperature: temperature,
-                label: label,
-              ),
-            ),
-            const Spacer(),
-            SizedBox(
-              width: 148,
-              height: 200,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child: _WeatherIllustration(
-                  key: ValueKey(info?.condition),
-                  gradient: gradient,
-                  imageAsset: imageAsset,
+        child: BlocBuilder<WeatherCubit, WeatherInfo?>(
+          builder: (context, state) {
+            final temperature = '${state?.temperature ?? '--'}°';
+            final label = state?.conditionLabel(l10n) ?? '';
+            final gradient = state?.gradient ?? _clearWeatherGradient;
+            final imageAsset = state?.imageAsset;
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: _WeatherDetails(
+                    temperature: temperature,
+                    label: label,
+                  ),
                 ),
-              ),
-            ),
-          ],
+                const Spacer(),
+                SizedBox(
+                  width: 148,
+                  height: 200,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    child: _WeatherIllustration(
+                      key: ValueKey(state?.condition),
+                      gradient: gradient,
+                      imageAsset: imageAsset,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -114,28 +117,21 @@ class _WeatherIllustration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      key: UniqueKey(),
       alignment: Alignment.centerRight,
       fit: StackFit.expand,
       clipBehavior: Clip.none,
       children: [
-        Positioned(
-          left: 0,
-          top: 0,
-          bottom: 0,
-          right: 0,
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-            ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: gradient,
-                  begin: Alignment.bottomRight,
-                  end: Alignment.topLeft,
-                ),
+        ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(10),
+            bottomRight: Radius.circular(10),
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: gradient,
+                begin: Alignment.bottomRight,
+                end: Alignment.topLeft,
               ),
             ),
           ),

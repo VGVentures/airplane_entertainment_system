@@ -2,7 +2,7 @@ import 'package:music_repository/gen/assets.gen.dart';
 import 'package:music_repository/music_repository.dart';
 
 /// {@template music_repository}
-/// Repository of music tracks
+/// Repository of music tracks.
 /// {@endtemplate}
 class MusicRepository {
   /// {@macro music_repository}

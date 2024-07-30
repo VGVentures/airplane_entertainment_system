@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_repository/music_repository.dart';
+import 'package:weather_repository/weather_repository.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -13,6 +14,9 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider(
+          create: (context) => WeatherRepository(),
+        ),
         RepositoryProvider(
           create: (context) => MusicRepository(),
         ),

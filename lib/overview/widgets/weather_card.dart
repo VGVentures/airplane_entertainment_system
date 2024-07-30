@@ -1,15 +1,21 @@
-import 'dart:ui';
-
 import 'package:airplane_entertainment_system/generated/assets.gen.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:weather_repository/weather_repository.dart';
 
 class WeatherCard extends StatelessWidget {
-  const WeatherCard({super.key});
+  const WeatherCard({required this.info, super.key});
+
+  final WeatherInfo? info;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final temperature = info?.temperature.toString() ?? '--';
+    final label = info?.conditionLabel(l10n) ?? '';
+    final gradient = info?.gradient ?? _clearWeatherGradient;
+    final imageAsset = info?.imageAsset;
+
     return SizedBox(
       height: 200,
       child: Card(
@@ -21,18 +27,18 @@ class WeatherCard extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  const Text(
-                    '62°',
-                    style: TextStyle(
+                  Text(
+                    '$temperature°',
+                    style: const TextStyle(
                       fontSize: 80,
                       height: 0.8,
                     ),
-                    textHeightBehavior: TextHeightBehavior(
+                    textHeightBehavior: const TextHeightBehavior(
                       applyHeightToFirstAscent: false,
                     ),
                   ),
                   Text(
-                    l10n.thunderstorms,
+                    label,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                     textHeightBehavior: const TextHeightBehavior(
                       applyHeightToFirstAscent: false,
@@ -43,64 +49,103 @@ class WeatherCard extends StatelessWidget {
             ),
             const Spacer(),
             SizedBox(
-              width: 168,
+              width: 148,
               height: 200,
-              child: Stack(
-                alignment: Alignment.centerRight,
-                fit: StackFit.expand,
-                clipBehavior: Clip.none,
-                children: [
-                  const Positioned(
-                    left: 20,
-                    top: 0,
-                    bottom: 0,
-                    right: 0,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                      ),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xff0a6cba),
-                              Color(0xff6ab9f7),
-                            ],
-                            begin: Alignment.bottomRight,
-                            end: Alignment.topLeft,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child: Stack(
+                  key: UniqueKey(),
+                  alignment: Alignment.centerRight,
+                  fit: StackFit.expand,
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      right: 0,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: gradient,
+                              begin: Alignment.bottomRight,
+                              end: Alignment.topLeft,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    right: 20,
-                    left: 0,
-                    child: ImageFiltered(
-                      imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
-                      child: Assets.thunder.image(
-                        width: 140,
-                        color: const Color(0x55003366),
-                        colorBlendMode: BlendMode.srcIn,
-                        fit: BoxFit.contain,
+                    if (imageAsset != null)
+                      Positioned(
+                        left: 10,
+                        right: 10,
+                        child: imageAsset.image(
+                          width: 140,
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 20,
-                    left: 0,
-                    child: Assets.thunder.image(
-                      width: 140,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+const _clearWeatherGradient = [
+  Color.fromARGB(255, 17, 204, 251),
+  Color.fromARGB(255, 151, 210, 255),
+];
+
+const _cloudyWeatherGradient = [
+  Color.fromARGB(255, 48, 137, 209),
+  Color.fromARGB(255, 152, 201, 239),
+];
+
+const _rainyWeatherGradient = [
+  Color.fromARGB(255, 92, 134, 169),
+  Color.fromARGB(255, 170, 205, 233),
+];
+
+const _thunderstormsWeatherGradient = [
+  Color.fromARGB(255, 53, 76, 95),
+  Color.fromARGB(255, 179, 193, 203),
+];
+
+@visibleForTesting
+extension WeatherUI on WeatherInfo {
+  String conditionLabel(AppLocalizations l10n) {
+    return switch (condition) {
+      WeatherCondition.clear => l10n.clear,
+      WeatherCondition.cloudy => l10n.cloudy,
+      WeatherCondition.rainy => l10n.rainy,
+      WeatherCondition.thunderstorms => l10n.thunderstorms,
+    };
+  }
+
+  AssetGenImage get imageAsset {
+    return switch (condition) {
+      WeatherCondition.clear => Assets.weather.clear,
+      WeatherCondition.cloudy => Assets.weather.cloudy,
+      WeatherCondition.rainy => Assets.weather.rainy,
+      WeatherCondition.thunderstorms => Assets.weather.thunderstorms,
+    };
+  }
+
+  List<Color> get gradient {
+    return switch (condition) {
+      WeatherCondition.clear => _clearWeatherGradient,
+      WeatherCondition.cloudy => _cloudyWeatherGradient,
+      WeatherCondition.rainy => _rainyWeatherGradient,
+      WeatherCondition.thunderstorms => _thunderstormsWeatherGradient,
+    };
   }
 }

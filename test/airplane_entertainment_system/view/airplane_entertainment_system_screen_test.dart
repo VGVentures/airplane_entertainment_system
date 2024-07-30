@@ -7,15 +7,27 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:music_repository/music_repository.dart';
+import 'package:weather_repository/weather_repository.dart';
 
 import '../../helpers/helpers.dart';
 
 void main() {
   group('$AirplaneEntertainmentSystemScreen', () {
+    late WeatherRepository weatherRepository;
     late MusicRepository musicRepository;
     late AudioPlayer audioPlayer;
 
     setUp(() {
+      weatherRepository = MockWeatherRepository();
+      when(() => weatherRepository.weather).thenReturn(
+        const WeatherInfo(
+          temperature: 70,
+          condition: WeatherCondition.clear,
+        ),
+      );
+      when(() => weatherRepository.weatherStream)
+          .thenAnswer((_) => const Stream.empty());
+
       musicRepository = MockMusicRepository();
       when(musicRepository.getTracks).thenReturn(const []);
 
@@ -34,6 +46,7 @@ void main() {
       await tester.pumpApp(
         const AirplaneEntertainmentSystemScreen(),
         layout: AesLayoutData.large,
+        weatherRepository: weatherRepository,
       );
 
       expect(find.byType(AesNavigationRail), findsOneWidget);
@@ -44,6 +57,7 @@ void main() {
       await tester.pumpApp(
         const AirplaneEntertainmentSystemScreen(),
         layout: AesLayoutData.small,
+        weatherRepository: weatherRepository,
       );
 
       expect(find.byType(AesBottomNavigationBar), findsOneWidget);
@@ -53,6 +67,7 @@ void main() {
       await tester.pumpApp(
         const AirplaneEntertainmentSystemScreen(),
         layout: AesLayoutData.small,
+        weatherRepository: weatherRepository,
       );
 
       expect(find.byType(TopButtonBar), findsOneWidget);
@@ -62,6 +77,7 @@ void main() {
       await tester.pumpApp(
         const AirplaneEntertainmentSystemScreen(),
         layout: AesLayoutData.small,
+        weatherRepository: weatherRepository,
       );
 
       expect(find.byType(SystemBackground), findsOneWidget);
@@ -71,6 +87,7 @@ void main() {
       await tester.pumpApp(
         const AirplaneEntertainmentSystemScreen(),
         layout: AesLayoutData.small,
+        weatherRepository: weatherRepository,
       );
 
       expect(find.byType(OverviewPage), findsOneWidget);
@@ -80,6 +97,7 @@ void main() {
       await tester.pumpApp(
         const AirplaneEntertainmentSystemScreen(),
         layout: AesLayoutData.small,
+        weatherRepository: weatherRepository,
         musicRepository: musicRepository,
         audioPlayer: audioPlayer,
       );
@@ -98,6 +116,7 @@ void main() {
         await tester.pumpApp(
           const AirplaneEntertainmentSystemScreen(),
           layout: layout,
+          weatherRepository: weatherRepository,
           musicRepository: musicRepository,
           audioPlayer: audioPlayer,
         );

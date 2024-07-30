@@ -6,6 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:music_repository/music_repository.dart';
+import 'package:weather_repository/weather_repository.dart';
+
+class MockWeatherRepository extends Mock implements WeatherRepository {}
 
 class MockMusicRepository extends Mock implements MusicRepository {}
 
@@ -15,6 +18,7 @@ extension PumpApp on WidgetTester {
   Future<void> pumpApp(
     Widget widget, {
     AesLayoutData? layout,
+    WeatherRepository? weatherRepository,
     MusicRepository? musicRepository,
     AudioPlayer? audioPlayer,
   }) async {
@@ -28,6 +32,9 @@ extension PumpApp on WidgetTester {
         data: layout,
         child: MultiRepositoryProvider(
           providers: [
+            RepositoryProvider<WeatherRepository>(
+              create: (context) => weatherRepository ?? MockWeatherRepository(),
+            ),
             RepositoryProvider<MusicRepository>(
               create: (context) => musicRepository ?? MockMusicRepository(),
             ),

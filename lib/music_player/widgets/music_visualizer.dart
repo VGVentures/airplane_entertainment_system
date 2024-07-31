@@ -68,8 +68,17 @@ class MusicVisualizerState extends State<MusicVisualizer>
     );
     spectrogramIndex = 0;
     spectrogram = (jsonDecode(spectrogramData) as List)
-        .map((e) => (e as List).map((e) => (e as num).toDouble()).toList())
+        .map(
+          (e) => (e as List)
+              // TODO(jolexxa): very bad hack to chop off the lowest and
+              // highest frequencies of the spectrograph. This makes the
+              // visualizer look more appealing.
+              .sublist(2, e.length - 2)
+              .map((e) => (e as num).toDouble())
+              .toList(),
+        )
         .toList();
+
     frequencyTweens = [
       for (final frequency in spectrogram[spectrogramIndex])
         ConstantTween<double>(frequency),

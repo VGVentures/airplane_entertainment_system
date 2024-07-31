@@ -19,7 +19,7 @@ class FlightApiClient {
 
   Timer? _timer;
 
-  final DateTime _timestamp = DateTime(2024, 7, 30, 13);
+  DateTime _timestamp = DateTime(2024, 7, 30, 13);
 
   static const _updateInterval = Duration(minutes: 1);
 
@@ -49,6 +49,8 @@ class FlightApiClient {
       Duration(minutes: random.nextInt(3) + 45),
     );
 
+    _timestamp = _timestamp.add(_updateInterval);
+
     return FlightInformation(
       departureAirport: const Airport(
         city: 'Newark',
@@ -60,7 +62,7 @@ class FlightApiClient {
       ),
       departureTime: departureTime,
       arrivalTime: arrivalTime,
-      timestamp: _timestamp.add(_updateInterval),
+      timestamp: _timestamp,
     );
   }
 

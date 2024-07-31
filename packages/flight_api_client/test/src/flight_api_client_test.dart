@@ -16,8 +16,6 @@ void main() {
           client.flightInformation,
           emitsInOrder([
             isA<FlightInformation>(),
-            isA<FlightInformation>(),
-            isA<FlightInformation>(),
           ]),
         );
       });

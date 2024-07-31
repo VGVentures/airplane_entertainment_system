@@ -1,6 +1,6 @@
-import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
 import 'package:airplane_entertainment_system/thumbnail/thumbnail.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/helpers.dart';

@@ -1,5 +1,5 @@
-import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:flutter/material.dart';
 
 class AirplaneEntertainmentSystemThumbnail extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:flutter/material.dart' hide Image;
 
 class SystemBackground extends StatelessWidget {
@@ -37,7 +37,7 @@ class SystemBackground extends StatelessWidget {
         AnimatedOpacity(
           duration: const Duration(milliseconds: 600),
           opacity: page == 0 ? 1 : 0,
-          child: const Clouds(
+          child: const WeatherClouds(
             key: Key('backgroundClouds'),
             count: 5,
             averageScale: 1,

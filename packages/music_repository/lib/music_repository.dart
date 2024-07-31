@@ -1,4 +1,4 @@
-/// Repository of music tracks
+/// Repository of music tracks.
 library;
 
 export 'src/model/model.dart';

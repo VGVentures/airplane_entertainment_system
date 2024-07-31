@@ -20,6 +20,8 @@ dependencies:
   just_audio: ^0.9.39
   music_repository:
     path: packages/music_repository
+  weather_api_client:
+    path: packages/weather_api_client
   weather_repository:
     path: packages/weather_repository
 

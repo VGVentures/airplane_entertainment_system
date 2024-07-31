@@ -11,15 +11,16 @@ class WeatherCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WeatherCubit(
+      create: (_) => WeatherBloc(
         weatherRepository: context.read(),
-      )..initialize(),
+      )..add(const WeatherUpdatesRequested()),
       child: const WeatherCardView(),
     );
   }
 }
 
 class WeatherCardView extends StatelessWidget {
+  @visibleForTesting
   const WeatherCardView({super.key});
 
   @override
@@ -30,12 +31,20 @@ class WeatherCardView extends StatelessWidget {
       height: 200,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: BlocBuilder<WeatherCubit, WeatherInfo?>(
+        child: BlocBuilder<WeatherBloc, WeatherState>(
           builder: (context, state) {
-            final temperature = '${state?.temperature ?? '--'}°';
-            final label = state?.conditionLabel(l10n) ?? '';
-            final gradient = state?.gradient ?? _clearWeatherGradient;
-            final imageAsset = state?.imageAsset;
+            if (state.status == WeatherStatus.initial) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state.status == WeatherStatus.error) {
+              return Center(
+                child: Text(
+                  l10n.weatherErrorMessage,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
 
             return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,21 +52,17 @@ class WeatherCardView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: _WeatherDetails(
-                    temperature: temperature,
-                    label: label,
+                    temperature: state.weatherInfo!.temperature.toString(),
+                    label: state.weatherInfo!.conditionLabel(l10n),
                   ),
                 ),
                 const Spacer(),
                 SizedBox(
                   width: 148,
                   height: 200,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    child: _WeatherIllustration(
-                      key: ValueKey(state?.condition),
-                      gradient: gradient,
-                      imageAsset: imageAsset,
-                    ),
+                  child: _WeatherIllustration(
+                    gradient: state.weatherInfo!.gradient,
+                    imageAsset: state.weatherInfo!.imageAsset,
                   ),
                 ),
               ],
@@ -83,7 +88,7 @@ class _WeatherDetails extends StatelessWidget {
     return Column(
       children: [
         Text(
-          temperature,
+          '$temperature°',
           style: const TextStyle(
             fontSize: 80,
             height: 0.8,
@@ -107,11 +112,10 @@ class _WeatherDetails extends StatelessWidget {
 class _WeatherIllustration extends StatelessWidget {
   const _WeatherIllustration({
     required this.gradient,
-    this.imageAsset,
-    super.key,
+    required this.imageAsset,
   });
 
-  final AssetGenImage? imageAsset;
+  final AssetGenImage imageAsset;
   final List<Color> gradient;
 
   @override
@@ -136,15 +140,14 @@ class _WeatherIllustration extends StatelessWidget {
             ),
           ),
         ),
-        if (imageAsset != null)
-          Positioned(
-            left: 10,
-            right: 10,
-            child: imageAsset!.image(
-              width: 140,
-              fit: BoxFit.contain,
-            ),
+        Positioned(
+          left: 10,
+          right: 10,
+          child: imageAsset.image(
+            width: 140,
+            fit: BoxFit.contain,
           ),
+        ),
       ],
     );
   }
@@ -171,7 +174,7 @@ const _thunderstormsWeatherGradient = [
 ];
 
 @visibleForTesting
-extension WeatherUI on WeatherInfo {
+extension WeatherUI on WeatherInformation {
   String conditionLabel(AppLocalizations l10n) {
     return switch (condition) {
       WeatherCondition.clear => l10n.clear,

@@ -13,13 +13,7 @@ void main() {
 
     setUp(() {
       weatherRepository = MockWeatherRepository();
-      when(() => weatherRepository.weather).thenReturn(
-        const WeatherInfo(
-          temperature: 70,
-          condition: WeatherCondition.clear,
-        ),
-      );
-      when(() => weatherRepository.weatherStream).thenAnswer(
+      when(() => weatherRepository.weatherInformation).thenAnswer(
         (_) => const Stream.empty(),
       );
     });

@@ -15,12 +15,12 @@ enum WeatherCondition {
   thunderstorms,
 }
 
-/// {@template weather_info}
+/// {@template weather_information}
 /// Contains the temperature and condition of the weather.
 /// {@endtemplate}
-class WeatherInfo extends Equatable {
-  /// {@macro weather_info}
-  const WeatherInfo({
+class WeatherInformation extends Equatable {
+  /// {@macro weather_information}
+  const WeatherInformation({
     required this.temperature,
     required this.condition,
   });

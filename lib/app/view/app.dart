@@ -8,20 +8,31 @@ import 'package:music_repository/music_repository.dart';
 import 'package:weather_repository/weather_repository.dart';
 
 class App extends StatelessWidget {
-  const App({super.key});
+  const App({
+    required WeatherRepository weatherRepository,
+    required MusicRepository musicRepository,
+    required AudioPlayer audioPlayer,
+    super.key,
+  })  : _weatherRepository = weatherRepository,
+        _musicRepository = musicRepository,
+        _audioPlayer = audioPlayer;
+
+  final WeatherRepository _weatherRepository;
+  final MusicRepository _musicRepository;
+  final AudioPlayer _audioPlayer;
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (context) => WeatherRepository(),
+        RepositoryProvider.value(
+          value: _weatherRepository,
         ),
-        RepositoryProvider(
-          create: (context) => MusicRepository(),
+        RepositoryProvider.value(
+          value: _musicRepository,
         ),
-        RepositoryProvider(
-          create: (context) => AudioPlayer(),
+        RepositoryProvider.value(
+          value: _audioPlayer,
         ),
       ],
       child: AesLayout(

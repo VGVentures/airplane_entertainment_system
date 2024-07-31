@@ -27,7 +27,7 @@ void main() {
         MaterialApp(
           home: DefaultAssetBundle(
             bundle: FakeAssetBundle(),
-            child: const MusicVisualizer(),
+            child: const MusicVisualizer(isActive: true),
           ),
         ),
       );
@@ -41,6 +41,64 @@ void main() {
       await tester.pump(const Duration(milliseconds: 50));
 
       expect(find.byType(MusicVisualizer), findsOneWidget);
+    });
+
+    testWidgets('changes animation when activated', (tester) async {
+      var isActive = false;
+      late void Function() activate;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DefaultAssetBundle(
+            bundle: FakeAssetBundle(),
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                activate = () => setState(() => isActive = true);
+                return MusicVisualizer(isActive: isActive);
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 50));
+
+      activate();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 250));
+
+      final state = tester.state<MusicVisualizerState>(
+        find.byType(MusicVisualizer),
+      );
+      expect(state.extensionController.value, 1);
+    });
+
+    testWidgets('changes animation when deactivated', (tester) async {
+      var isActive = true;
+      late void Function() deactivate;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DefaultAssetBundle(
+            bundle: FakeAssetBundle(),
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                deactivate = () => setState(() => isActive = false);
+                return MusicVisualizer(isActive: isActive);
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 50));
+
+      deactivate();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 250));
+
+      final state = tester.state<MusicVisualizerState>(
+        find.byType(MusicVisualizer),
+      );
+      expect(state.extensionController.value, 0);
     });
   });
 }

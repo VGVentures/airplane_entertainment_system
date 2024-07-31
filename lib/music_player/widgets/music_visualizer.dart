@@ -4,16 +4,20 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class MusicVisualizer extends StatefulWidget {
-  const MusicVisualizer({super.key});
+  const MusicVisualizer({required this.isActive, super.key});
+
+  final bool isActive;
 
   @override
-  State<MusicVisualizer> createState() => _MusicVisualizerState();
+  State<MusicVisualizer> createState() => MusicVisualizerState();
 }
 
-class _MusicVisualizerState extends State<MusicVisualizer>
-    with SingleTickerProviderStateMixin {
+@visibleForTesting
+class MusicVisualizerState extends State<MusicVisualizer>
+    with TickerProviderStateMixin {
   bool ready = false;
   late final AnimationController animationController;
+  late final AnimationController extensionController;
   late final List<List<double>> spectrogram;
   late int spectrogramIndex;
   late List<Tween<double>> frequencyTweens;
@@ -25,6 +29,13 @@ class _MusicVisualizerState extends State<MusicVisualizer>
       vsync: this,
       duration: const Duration(milliseconds: 50),
     );
+    extensionController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    if (widget.isActive) {
+      extensionController.value = 1;
+    }
   }
 
   @override
@@ -39,6 +50,16 @@ class _MusicVisualizerState extends State<MusicVisualizer>
     super.didChangeDependencies();
 
     _loadSpectrogram();
+  }
+
+  @override
+  void didUpdateWidget(covariant MusicVisualizer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive) {
+      extensionController.forward();
+    } else {
+      extensionController.reverse();
+    }
   }
 
   Future<void> _loadSpectrogram() async {
@@ -90,11 +111,15 @@ class _MusicVisualizerState extends State<MusicVisualizer>
     }
 
     return AnimatedBuilder(
-      animation: animationController,
+      animation: Listenable.merge([animationController, extensionController]),
       builder: (context, _) => CustomPaint(
         painter: _MusicVisualizerPainter(
           channels: frequencyTweens
-              .map((tween) => tween.transform(animationController.value))
+              .map(
+                (tween) =>
+                    tween.transform(animationController.value) *
+                    extensionController.value,
+              )
               .toList(),
         ),
       ),

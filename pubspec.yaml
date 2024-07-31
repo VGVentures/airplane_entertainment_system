@@ -21,6 +21,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.19.0
+  just_audio: ^0.9.39
+  music_repository:
+    path: packages/music_repository
 
 dev_dependencies:
   bloc_test: ^9.1.7

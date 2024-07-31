@@ -1,6 +1,9 @@
 import 'package:aes_ui/aes_ui.dart';
+import 'package:airplane_entertainment_system/flight_tracking/flight_tracking.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
+import 'package:flight_information_repository/flight_information_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class FlightTrackingCard extends StatelessWidget {
@@ -8,41 +11,76 @@ class FlightTrackingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => FlightTrackingBloc(
+        flightProgressRepository: context.read<FlightInformationRepository>(),
+      )..add(const FlightTrackingUpdatesRequested()),
+      child: const FlightTrackingCardView(),
+    );
+  }
+}
+
+class FlightTrackingCardView extends StatelessWidget {
+  @visibleForTesting
+  const FlightTrackingCardView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return SizedBox(
       height: 280,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.all(30),
-          child: Column(
-            children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _AirportIndicator(
-                    name: 'San Francisco',
-                    code: 'SFO',
-                    alignment: CrossAxisAlignment.start,
+          child: BlocBuilder<FlightTrackingBloc, FlightTrackingState>(
+            builder: (context, state) {
+              if (state.status == TrackingStatus.initial) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (state.status == TrackingStatus.error) {
+                return Center(
+                  child: Text(
+                    l10n.trackingErrorMessage,
+                    textAlign: TextAlign.center,
                   ),
-                  _AirportIndicator(
-                    name: 'New York City',
-                    code: 'NYC',
-                    alignment: CrossAxisAlignment.end,
+                );
+              }
+
+              return Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _AirportIndicator(
+                        name: state.flightInformation!.departureAirport.city,
+                        code: state.flightInformation!.departureAirport.code,
+                        alignment: CrossAxisAlignment.start,
+                      ),
+                      _AirportIndicator(
+                        name: state.flightInformation!.arrivalAirport.city,
+                        code: state.flightInformation!.arrivalAirport.code,
+                        alignment: CrossAxisAlignment.end,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  _FlightProgress(state.percentComplete),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  _TimeIndicator(
+                    departureTime: state.flightInformation!.departureTime,
+                    arrivalTime: state.flightInformation!.arrivalTime,
+                    remainingTime: state.remainingTime,
                   ),
                 ],
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              const _FlightProgress(),
-              const SizedBox(
-                height: 30,
-              ),
-              _TimeIndicator(
-                departureTime: DateTime.now(),
-                arrivalTime: DateTime.now().add(const Duration(hours: 2)),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -86,10 +124,12 @@ class _TimeIndicator extends StatelessWidget {
   const _TimeIndicator({
     required this.departureTime,
     required this.arrivalTime,
+    required this.remainingTime,
   });
 
   final DateTime departureTime;
   final DateTime arrivalTime;
+  final Duration remainingTime;
 
   @override
   Widget build(BuildContext context) {
@@ -98,13 +138,13 @@ class _TimeIndicator extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _DepartureOrArrivalTime(
-          time: DateFormat('hh:mm').format(departureTime),
+          time: DateFormat('h:mm').format(departureTime),
           code: DateFormat('a').format(departureTime),
           alignment: CrossAxisAlignment.start,
         ),
-        const _RemainingTimeIndicator(),
+        _RemainingTimeIndicator(remainingTime),
         _DepartureOrArrivalTime(
-          time: DateFormat('hh:mm').format(arrivalTime),
+          time: DateFormat('h:mm').format(arrivalTime),
           code: DateFormat('a').format(arrivalTime),
           alignment: CrossAxisAlignment.end,
         ),
@@ -143,7 +183,9 @@ class _DepartureOrArrivalTime extends StatelessWidget {
 }
 
 class _RemainingTimeIndicator extends StatelessWidget {
-  const _RemainingTimeIndicator();
+  const _RemainingTimeIndicator(this.remainingTime);
+
+  final Duration remainingTime;
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +201,10 @@ class _RemainingTimeIndicator extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
-              '2 ${l10n.hours}',
+              l10n.remainingTime(
+                remainingTime.inHours,
+                remainingTime.inMinutes % 60,
+              ),
               style: const TextStyle(color: Colors.white),
             ),
           ),
@@ -174,7 +219,13 @@ class _RemainingTimeIndicator extends StatelessWidget {
 }
 
 class _FlightProgress extends StatelessWidget {
-  const _FlightProgress();
+  const _FlightProgress(this.progress)
+      : assert(
+          progress >= 0 && progress <= 100,
+          'Progress must be between 0 and 100',
+        );
+
+  final int progress;
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +233,7 @@ class _FlightProgress extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          flex: 11,
+          flex: progress,
           child: SizedBox(
             height: 5,
             child: DecoratedBox(
@@ -202,7 +253,7 @@ class _FlightProgress extends StatelessWidget {
           ),
         ),
         Expanded(
-          flex: 8,
+          flex: 100 - progress,
           child: SizedBox(
             height: 5,
             child: DecoratedBox(

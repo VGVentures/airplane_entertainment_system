@@ -1,17 +1,28 @@
 {
     "@@locale": "en",
-    "helloExperience": "Hello Experience",
-    "@helloExperience": {
-        "description": "The initial message of the experience"
-    },
     "goodVibes": "Good Vibes",
     "multipleArtists": "Multiple Artists",
     "minutesShort": "mins",
     "remaining": "Remaining",
-    "hours": "hours",
+    "remainingTime": "{hours} h {minutes} min",
+    "@remainingTime": {
+        "description": "The remaining time for the flight.",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
     "songs": "songs",
     "welcomeMessage": "Welcome on board",
     "welcomeSubtitle": "Lunch will be served in\n10 minutes",
     "assistButton": "ASSIST",
-    "thunderstorms": "Thunderstorms"
+    "thunderstorms": "Thunderstorms",
+    "trackingErrorMessage": "Uh oh! There was an error while fetching the flight information.",
+    "@trackingErrorMessage": {
+        "description": "The error message for when the flight tracking information fails to update."
+    }
 }

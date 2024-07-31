@@ -1,0 +1,19 @@
+name: weather_api_client
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    paths:
+      - "packages/weather_api_client/**"
+      - ".github/workflows/weather_api_client.yaml"
+    branches:
+      - main
+
+jobs:
+  build:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    with:
+      working_directory: packages/weather_api_client

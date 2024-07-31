@@ -71,7 +71,7 @@ class _CloudBackgroundState extends State<Clouds>
 
     _styleController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 600),
     );
 
     _renderClouds();

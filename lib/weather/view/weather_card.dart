@@ -45,7 +45,7 @@ class WeatherCard extends StatelessWidget {
                   width: 148,
                   height: 200,
                   child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 600),
                     child: _WeatherIllustration(
                       key: ValueKey(state.weatherInfo!.condition),
                       gradient: state.weatherInfo!.gradient,

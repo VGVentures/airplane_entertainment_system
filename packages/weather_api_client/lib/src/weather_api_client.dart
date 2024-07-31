@@ -23,7 +23,7 @@ class WeatherApiClient {
   final StreamController<WeatherInformation> _controller =
       StreamController<WeatherInformation>();
 
-  static const _updateInterval = Duration(minutes: 1);
+  static const _updateInterval = Duration(seconds: 3);
 
   Timer? _timer;
 
@@ -33,7 +33,7 @@ class WeatherApiClient {
 
   /// Random interval between up to 30 seconds.
   Duration get _randomInterval {
-    final seconds = _random.nextInt(30);
+    final seconds = _random.nextInt(1);
     return Duration(seconds: seconds);
   }
 
@@ -61,22 +61,25 @@ class WeatherApiClient {
   /// is returned.
   @visibleForTesting
   WeatherInformation nextWeatherInformation() {
+    WeatherInformation information;
     if (lastWeatherInformation == null) {
       final random = _random.nextInt(weatherInfos.length);
-      return weatherInfos[random];
-    }
-
-    final index = weatherInfos.indexOf(lastWeatherInformation!);
-    if (index == 0) {
-      return weatherInfos[1];
-    } else if (index == weatherInfos.length - 1) {
-      return weatherInfos[weatherInfos.length - 2];
+      information = weatherInfos[random];
     } else {
-      final values = [index - 1, index + 1];
-      final random = _random.nextInt(values.length);
-      final nextIndex = values[random];
-      return weatherInfos[nextIndex];
+      final index = weatherInfos.indexOf(lastWeatherInformation!);
+      if (index == 0) {
+        information = weatherInfos[1];
+      } else if (index == weatherInfos.length - 1) {
+        information = weatherInfos[weatherInfos.length - 2];
+      } else {
+        final values = [index - 1, index + 1];
+        final random = _random.nextInt(values.length);
+        final nextIndex = values[random];
+        information = weatherInfos[nextIndex];
+      }
     }
+    lastWeatherInformation = information;
+    return information;
   }
 
   /// Cancels the timer and closes the stream controller.

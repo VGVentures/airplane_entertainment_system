@@ -9,7 +9,7 @@ import 'package:weather_repository/weather_repository.dart';
 import '../../helpers/pump_experience.dart';
 import '../../helpers/tester_l10n.dart';
 
-class _MockWeatherCubit extends MockBloc<WeatherEvent, WeatherState>
+class _MockWeatherBloc extends MockBloc<WeatherEvent, WeatherState>
     implements WeatherBloc {}
 
 void main() {
@@ -36,7 +36,7 @@ void main() {
     late WeatherBloc weatherBloc;
 
     setUp(() {
-      weatherBloc = _MockWeatherCubit();
+      weatherBloc = _MockWeatherBloc();
     });
 
     testWidgets('renders a loading indicator when status is initial',
@@ -46,7 +46,7 @@ void main() {
       await tester.pumpApp(
         BlocProvider.value(
           value: weatherBloc,
-          child: const WeatherCardView(),
+          child: const WeatherCard(),
         ),
       );
 
@@ -64,7 +64,7 @@ void main() {
       await tester.pumpApp(
         BlocProvider.value(
           value: weatherBloc,
-          child: const WeatherCardView(),
+          child: const WeatherCard(),
         ),
       );
 
@@ -84,7 +84,7 @@ void main() {
         await tester.pumpApp(
           BlocProvider.value(
             value: weatherBloc,
-            child: const WeatherCardView(),
+            child: const WeatherCard(),
           ),
         );
 

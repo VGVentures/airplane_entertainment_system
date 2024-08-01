@@ -1,4 +1,4 @@
-import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:flutter/material.dart' hide Image;
 
 class SystemBackground extends StatelessWidget {
@@ -14,30 +14,11 @@ class SystemBackground extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 600),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                if (page == 1)
-                  const Color(0xFFFFFFFF)
-                else
-                  const Color(0xffb1fff8),
-                const Color(0xFF00A8DC),
-              ],
-              stops: [
-                if (page == 1) 0.2 else 0.0,
-                1.0,
-              ],
-              begin: Alignment.topRight,
-              end: Alignment.centerLeft,
-            ),
-          ),
-        ),
+        WeatherBackground(enabled: page == 0),
         AnimatedOpacity(
           duration: const Duration(milliseconds: 600),
           opacity: page == 0 ? 1 : 0,
-          child: const Clouds(
+          child: const WeatherClouds(
             key: Key('backgroundClouds'),
             count: 5,
             averageScale: 1,

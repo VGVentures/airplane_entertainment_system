@@ -7,22 +7,6 @@ import 'package:weather_repository/weather_repository.dart';
 
 class WeatherCard extends StatelessWidget {
   const WeatherCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => WeatherBloc(
-        weatherRepository: context.read(),
-      )..add(const WeatherUpdatesRequested()),
-      child: const WeatherCardView(),
-    );
-  }
-}
-
-class WeatherCardView extends StatelessWidget {
-  @visibleForTesting
-  const WeatherCardView({super.key});
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -60,9 +44,13 @@ class WeatherCardView extends StatelessWidget {
                 SizedBox(
                   width: 148,
                   height: 200,
-                  child: _WeatherIllustration(
-                    gradient: state.weatherInfo!.gradient,
-                    imageAsset: state.weatherInfo!.imageAsset,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 600),
+                    child: _WeatherIllustration(
+                      key: ValueKey(state.weatherInfo!.condition),
+                      gradient: state.weatherInfo!.gradient,
+                      imageAsset: state.weatherInfo!.imageAsset,
+                    ),
                   ),
                 ),
               ],
@@ -113,6 +101,7 @@ class _WeatherIllustration extends StatelessWidget {
   const _WeatherIllustration({
     required this.gradient,
     required this.imageAsset,
+    super.key,
   });
 
   final AssetGenImage imageAsset;

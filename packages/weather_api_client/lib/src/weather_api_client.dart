@@ -23,7 +23,7 @@ class WeatherApiClient {
   final StreamController<WeatherInformation> _controller =
       StreamController<WeatherInformation>();
 
-  static const _updateInterval = Duration(seconds: 3);
+  static const _updateInterval = Duration(minutes: 1);
 
   Timer? _timer;
 
@@ -33,7 +33,7 @@ class WeatherApiClient {
 
   /// Random interval between up to 30 seconds.
   Duration get _randomInterval {
-    final seconds = _random.nextInt(1);
+    final seconds = _random.nextInt(30);
     return Duration(seconds: seconds);
   }
 

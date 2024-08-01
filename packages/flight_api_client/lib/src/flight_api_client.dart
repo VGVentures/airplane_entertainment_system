@@ -21,6 +21,9 @@ class FlightApiClient {
 
   DateTime _timestamp = DateTime(2024, 7, 30, 13);
 
+  final _departureTime = DateTime(2024, 7, 30, 13);
+  final _arrivalTime = DateTime(2024, 7, 30, 13, 45);
+
   static const _updateInterval = Duration(minutes: 1);
 
   /// Retrieves the flight information.
@@ -44,12 +47,14 @@ class FlightApiClient {
     // weather or traffic.
     final random = Random();
 
-    final departureTime = DateTime(2024, 7, 30, 13);
-    final arrivalTime = departureTime.add(
-      Duration(minutes: random.nextInt(3) + 45),
-    );
-
     _timestamp = _timestamp.add(_updateInterval);
+
+    final updatedArrivalTime =
+        _arrivalTime.add(Duration(minutes: random.nextInt(3)));
+
+    if (_timestamp.isAfter(updatedArrivalTime)) {
+      _timer?.cancel();
+    }
 
     return FlightInformation(
       departureAirport: const Airport(
@@ -60,8 +65,8 @@ class FlightApiClient {
         city: 'New York City',
         code: 'LGA',
       ),
-      departureTime: departureTime,
-      arrivalTime: arrivalTime,
+      departureTime: _departureTime,
+      arrivalTime: updatedArrivalTime,
       timestamp: _timestamp,
     );
   }

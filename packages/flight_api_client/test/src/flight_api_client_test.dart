@@ -26,6 +26,26 @@ void main() {
           expect(updates.length, equals(3));
         });
       });
+
+      test('stops emitting updates after the arrival time', () {
+        fakeAsync((async) {
+          final client = FlightApiClient();
+          final updates = <FlightInformation>[];
+
+          client.flightInformation.listen(updates.add);
+
+          // Within 50 minutes, there shouldn't be more than 48 updates.
+          async.elapse(Duration(minutes: 50));
+
+          final numberOfUpdates = updates.length;
+
+          // Flight has arrived by this point, so no more updates
+          // should be emitted.
+          async.elapse(Duration(minutes: 5));
+
+          expect(updates.length, equals(numberOfUpdates));
+        });
+      });
     });
 
     group('dispose', () {

@@ -58,14 +58,14 @@ void main() {
 
       blocTest<WeatherBloc, WeatherState>(
         'emits error status when an error occurs',
-        build: () {
+        setUp: () {
           when(() => weatherRepository.weatherInformation).thenAnswer(
             (_) => Stream.error(Exception('oops')),
           );
-          return WeatherBloc(
-            weatherRepository: weatherRepository,
-          );
         },
+        build: () => WeatherBloc(
+          weatherRepository: weatherRepository,
+        ),
         act: (bloc) => bloc.add(const WeatherUpdatesRequested()),
         expect: () => [
           const WeatherState(

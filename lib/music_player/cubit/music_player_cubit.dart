@@ -32,7 +32,7 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
 
   void _onProgressChanged(Duration position) {
     final duration = _player.duration;
-    if (duration == null) return;
+    if (duration == null || duration.inMilliseconds == 0) return;
     final progress = position.inMilliseconds / duration.inMilliseconds;
     emit(state.copyWith(progress: progress));
   }

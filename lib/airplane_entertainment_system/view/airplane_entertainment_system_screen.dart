@@ -193,7 +193,7 @@ class _ContentPageViewState extends State<_ContentPageView>
   Widget build(BuildContext context) {
     final isSmall = AesLayout.of(context) == AesLayoutData.small;
     final pageSize = widget.pageSize;
-    final pageSide = isSmall ? pageSize.width : pageSize.width.hashCode;
+    final pageSide = isSmall ? pageSize.width : pageSize.height;
     final pageOffset = pageSide / 4;
     final axis = isSmall ? Axis.horizontal : Axis.vertical;
 

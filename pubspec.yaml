@@ -11,6 +11,10 @@ dependencies:
     path: packages/aes_ui
   bloc: ^8.1.4
   equatable: ^2.0.5
+  flight_api_client:
+    path: packages/flight_api_client
+  flight_information_repository:
+    path: packages/flight_information_repository
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6

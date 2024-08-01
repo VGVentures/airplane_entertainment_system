@@ -1,3 +1,4 @@
+import 'package:airplane_entertainment_system/flight_tracking/flight_tracking.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
 import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:bloc_test/bloc_test.dart';

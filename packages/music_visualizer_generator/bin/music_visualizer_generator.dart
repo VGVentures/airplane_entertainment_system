@@ -18,6 +18,7 @@
 // suitable for the visualizer widget.
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -62,8 +63,8 @@ double scaled(double power) {
 
 void main(List<String> argv) async {
   if (argv.length != 1) {
-    print('Wrong number of args. Usage:');
-    print('  dart run spectrogram.dart test.wav');
+    log('Wrong number of args. Usage:');
+    log('  dart run spectrogram.dart test.wav');
     return;
   }
   final wav = await Wav.readFile(argv[0]);

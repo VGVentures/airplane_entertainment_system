@@ -20,9 +20,14 @@ dependencies:
   just_audio: ^0.9.39
   music_repository:
     path: packages/music_repository
+  weather_api_client:
+    path: packages/weather_api_client
+  weather_repository:
+    path: packages/weather_repository
 
 dev_dependencies:
   bloc_test: ^9.1.7
+  build_runner: ^2.4.11
   flutter_gen_runner: ^5.3.2
   flutter_test:
     sdk: flutter
@@ -34,6 +39,7 @@ flutter:
   generate: true
   assets:
     - assets/
+    - assets/weather/
 
 flutter_gen:
   output: lib/generated/

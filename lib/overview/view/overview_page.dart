@@ -1,6 +1,7 @@
 import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:flutter/material.dart';
 
 class OverviewPage extends StatelessWidget {

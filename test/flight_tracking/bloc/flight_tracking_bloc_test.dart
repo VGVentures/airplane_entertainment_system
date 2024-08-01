@@ -29,7 +29,7 @@ void main() {
     group('FlightTrackingUpdatesRequested', () {
       blocTest<FlightTrackingBloc, FlightTrackingState>(
         'emits FlightTrackingInProgress and FlightTrackingSuccess',
-        build: () {
+        setUp: () {
           when(() => flightInformationRepository.flightInformation).thenAnswer(
             (_) => Stream.value(
               FlightInformation(
@@ -41,10 +41,10 @@ void main() {
               ),
             ),
           );
-          return FlightTrackingBloc(
-            flightProgressRepository: flightInformationRepository,
-          );
         },
+        build: () => FlightTrackingBloc(
+          flightProgressRepository: flightInformationRepository,
+        ),
         act: (bloc) => bloc.add(const FlightTrackingUpdatesRequested()),
         expect: () => [
           FlightTrackingState(
@@ -64,14 +64,14 @@ void main() {
 
       blocTest<FlightTrackingBloc, FlightTrackingState>(
         'emits FlightTrackingInProgress and FlightTrackingFailure',
-        build: () {
+        setUp: () {
           when(() => flightInformationRepository.flightInformation).thenAnswer(
             (_) => Stream.error(Exception('oops')),
           );
-          return FlightTrackingBloc(
-            flightProgressRepository: flightInformationRepository,
-          );
         },
+        build: () => FlightTrackingBloc(
+          flightProgressRepository: flightInformationRepository,
+        ),
         act: (bloc) => bloc.add(const FlightTrackingUpdatesRequested()),
         expect: () => [
           FlightTrackingState(status: TrackingStatus.error),
@@ -80,7 +80,7 @@ void main() {
 
       blocTest<FlightTrackingBloc, FlightTrackingState>(
         'emits 100 for percentComplete after flight has arrived',
-        build: () {
+        setUp: () {
           when(() => flightInformationRepository.flightInformation).thenAnswer(
             (_) => Stream.value(
               FlightInformation(
@@ -92,10 +92,10 @@ void main() {
               ),
             ),
           );
-          return FlightTrackingBloc(
-            flightProgressRepository: flightInformationRepository,
-          );
         },
+        build: () => FlightTrackingBloc(
+          flightProgressRepository: flightInformationRepository,
+        ),
         act: (bloc) => bloc.add(const FlightTrackingUpdatesRequested()),
         expect: () => [
           FlightTrackingState(

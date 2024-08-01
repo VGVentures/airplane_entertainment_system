@@ -1,48 +1,52 @@
 import 'package:airplane_entertainment_system/music_player/cubit/music_player_cubit.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:music_repository/music_repository.dart';
 
 import '../../helpers/pump_experience.dart';
 
-class _FakeAudioSource extends Fake implements AudioSource {}
+class _FakeAssetSource extends Fake implements AssetSource {}
+
+class _MockAudioCache extends Mock implements AudioCache {}
 
 void main() {
   group('MusicPlayerCubit', () {
     const tracks = [
-      MusicTrack(index: 0, title: 'Title', artist: 'Artist', path: 'path'),
+      MusicTrack(index: 0, title: 'Title0', artist: 'Artist0', path: 'path0'),
+      MusicTrack(index: 1, title: 'Title1', artist: 'Artist1', path: 'path1'),
     ];
     late MusicRepository musicRepository;
+    late AudioCache audioCache;
     late AudioPlayer audioPlayer;
 
     setUpAll(() {
-      registerFallbackValue(_FakeAudioSource());
-      registerFallbackValue(LoopMode.off);
+      registerFallbackValue(_FakeAssetSource());
+      registerFallbackValue(ReleaseMode.loop);
+      registerFallbackValue(Duration.zero);
     });
 
     setUp(() {
       musicRepository = MockMusicRepository();
 
       audioPlayer = MockAudioPlayer();
-      when(() => audioPlayer.positionStream)
+      when(() => audioPlayer.onPositionChanged)
           .thenAnswer((_) => const Stream.empty());
-      when(() => audioPlayer.playingStream)
+      when(() => audioPlayer.onPlayerStateChanged)
           .thenAnswer((_) => const Stream.empty());
-      when(() => audioPlayer.currentIndexStream)
-          .thenAnswer((_) => const Stream.empty());
-      when(() => audioPlayer.setAudioSource(any()))
-          .thenAnswer((_) async => null);
-      when(() => audioPlayer.seek(any(), index: any(named: 'index')))
-          .thenAnswer((_) async {});
+      when(() => audioPlayer.play(any())).thenAnswer((_) async {});
+      when(() => audioPlayer.seek(any())).thenAnswer((_) async {});
+      when(audioPlayer.getDuration).thenAnswer((_) async => null);
       when(audioPlayer.pause).thenAnswer((_) async {});
-      when(audioPlayer.play).thenAnswer((_) async {});
-      when(audioPlayer.seekToNext).thenAnswer((_) async {});
-      when(audioPlayer.seekToPrevious).thenAnswer((_) async {});
-      when(() => audioPlayer.setLoopMode(any())).thenAnswer((_) async {});
-      when(() => audioPlayer.setShuffleModeEnabled(any()))
-          .thenAnswer((_) async {});
+      when(audioPlayer.resume).thenAnswer((_) async {});
+      when(audioPlayer.release).thenAnswer((_) async {});
+      when(() => audioPlayer.setReleaseMode(any())).thenAnswer((_) async {
+        return;
+      });
+
+      audioCache = _MockAudioCache();
+      when(() => audioPlayer.audioCache).thenReturn(audioCache);
     });
 
     MusicPlayerCubit build() => MusicPlayerCubit(
@@ -51,75 +55,52 @@ void main() {
         );
 
     blocTest<MusicPlayerCubit, MusicPlayerState>(
-      'initial state is default',
-      build: build,
-      verify: (cubit) {
-        expect(cubit.state, const MusicPlayerState());
-      },
-    );
-
-    blocTest<MusicPlayerCubit, MusicPlayerState>(
-      'initial state is default',
-      build: build,
-      verify: (cubit) {
-        expect(cubit.state, const MusicPlayerState());
-      },
-    );
-
-    blocTest<MusicPlayerCubit, MusicPlayerState>(
-      'updates [isPlaying] when [playingStream] emits',
-      setUp: () => when(() => audioPlayer.playingStream)
-          .thenAnswer((_) => Stream.value(true)),
-      build: build,
-      expect: () => const [
-        MusicPlayerState(isPlaying: true),
-      ],
-    );
-
-    blocTest<MusicPlayerCubit, MusicPlayerState>(
-      'updates [progress] when [positionStream] emits',
+      'updates [progress] when [onPositionChanged] emits',
+      seed: () => const MusicPlayerState(
+        duration: Duration(seconds: 10),
+      ),
       setUp: () {
-        when(() => audioPlayer.duration)
-            .thenReturn(const Duration(seconds: 10));
-        when(() => audioPlayer.positionStream)
+        when(() => audioPlayer.onPositionChanged)
             .thenAnswer((_) => Stream.value(const Duration(seconds: 1)));
       },
       build: build,
       expect: () => const [
-        MusicPlayerState(progress: 0.1),
+        MusicPlayerState(duration: Duration(seconds: 10), progress: 0.1),
       ],
     );
 
-    blocTest<MusicPlayerCubit, MusicPlayerState>(
-      'updates [currentTrackIndex] when [currentIndexStream] emits value',
-      setUp: () => when(() => audioPlayer.currentIndexStream)
-          .thenAnswer((_) => Stream.value(0)),
-      build: build,
-      expect: () => const [
-        MusicPlayerState(currentTrackIndex: 0),
-      ],
-    );
+    group('when [onPlayerStateChanged] emits', () {
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'updates [isPlaying]',
+        setUp: () => when(() => audioPlayer.onPlayerStateChanged)
+            .thenAnswer((_) => Stream.value(PlayerState.playing)),
+        build: build,
+        expect: () => const [
+          MusicPlayerState(isPlaying: true),
+        ],
+      );
 
-    blocTest<MusicPlayerCubit, MusicPlayerState>(
-      'clears state when [currentIndexStream] emits null (keeping tracks)',
-      setUp: () => when(() => audioPlayer.currentIndexStream)
-          .thenAnswer((_) => Stream.value(null)),
-      seed: () => const MusicPlayerState(
-        tracks: tracks,
-        currentTrackIndex: 0,
-        isPlaying: true,
-      ),
-      build: build,
-      expect: () => const [
-        MusicPlayerState(tracks: tracks),
-      ],
-    );
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'moves to next track if state is [PlayerState.completed]',
+        setUp: () => when(() => audioPlayer.onPlayerStateChanged)
+            .thenAnswer((_) => Stream.value(PlayerState.completed)),
+        seed: () => const MusicPlayerState(
+          tracks: tracks,
+          currentTrackIndex: 0,
+        ),
+        build: build,
+        expect: () => [
+          const MusicPlayerState(
+            tracks: tracks,
+            currentTrackIndex: 1,
+          ),
+        ],
+      );
+    });
 
     group('initialize', () {
       setUp(() {
         when(musicRepository.getTracks).thenReturn(tracks);
-        when(() => audioPlayer.audioSource).thenReturn(_FakeAudioSource());
-        when(() => audioPlayer.audioSource).thenReturn(null);
       });
 
       blocTest<MusicPlayerCubit, MusicPlayerState>(
@@ -130,38 +111,44 @@ void main() {
           MusicPlayerState(tracks: tracks),
         ],
       );
-
-      blocTest<MusicPlayerCubit, MusicPlayerState>(
-        'sets tracks as audio source in player if it is not set',
-        setUp: () => when(() => audioPlayer.audioSource).thenReturn(null),
-        build: build,
-        act: (cubit) => cubit.initialize(),
-        verify: (_) => verify(
-          () => audioPlayer.setAudioSource(
-            any(that: isA<ConcatenatingAudioSource>()),
-          ),
-        ).called(1),
-      );
     });
 
     group('playTrack', () {
-      blocTest<MusicPlayerCubit, MusicPlayerState>(
-        'calls [audioPlayer.seek] with at the track index',
-        build: build,
-        act: (cubit) => cubit.playTrack(tracks[0]),
-        verify: (_) => verify(
-          () => audioPlayer.seek(
-            Duration.zero,
-            index: 0,
-          ),
-        ).called(1),
-      );
+      setUp(() {
+        when(audioPlayer.getDuration).thenAnswer(
+          (_) async => const Duration(seconds: 10),
+        );
+      });
 
       blocTest<MusicPlayerCubit, MusicPlayerState>(
         'calls [audioPlayer.play]',
         build: build,
         act: (cubit) => cubit.playTrack(tracks[0]),
-        verify: (_) => verify(audioPlayer.play).called(1),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[0].path),
+              ),
+            ),
+          ),
+        ).called(1),
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'emits track index and duration',
+        build: build,
+        seed: () => const MusicPlayerState(tracks: tracks),
+        act: (cubit) => cubit.playTrack(tracks[0]),
+        expect: () => const [
+          MusicPlayerState(
+            tracks: tracks,
+            currentTrackIndex: 0,
+            duration: Duration(seconds: 10),
+          ),
+        ],
       );
 
       blocTest<MusicPlayerCubit, MusicPlayerState>(
@@ -179,14 +166,34 @@ void main() {
 
     group('togglePlayPause', () {
       blocTest<MusicPlayerCubit, MusicPlayerState>(
-        'calls [audioPlayer.play] when the player is paused',
+        'plays first track if current track is null',
+        build: build,
+        seed: () => const MusicPlayerState(
+          tracks: tracks,
+        ),
+        act: (cubit) => cubit.togglePlayPause(),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[0].path),
+              ),
+            ),
+          ),
+        ).called(1),
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'calls [audioPlayer.resume] when the player is paused',
         build: build,
         seed: () => const MusicPlayerState(
           tracks: tracks,
           currentTrackIndex: 0,
         ),
         act: (cubit) => cubit.togglePlayPause(),
-        verify: (_) => verify(audioPlayer.play).called(1),
+        verify: (_) => verify(audioPlayer.resume).called(1),
       );
 
       blocTest<MusicPlayerCubit, MusicPlayerState>(
@@ -203,17 +210,13 @@ void main() {
     });
 
     group('seek', () {
-      setUp(() {
-        when(() => audioPlayer.duration)
-            .thenReturn(const Duration(seconds: 10));
-      });
-
       blocTest<MusicPlayerCubit, MusicPlayerState>(
         'calls [audioPlayer.seek] with the corresponding duration and',
         build: build,
         seed: () => const MusicPlayerState(
           tracks: tracks,
           currentTrackIndex: 0,
+          duration: Duration(seconds: 10),
         ),
         act: (cubit) => cubit.seek(0.5),
         verify: (_) => verify(
@@ -226,27 +229,179 @@ void main() {
 
     group('next', () {
       blocTest<MusicPlayerCubit, MusicPlayerState>(
-        'calls [audioPlayer.seekToNext]',
+        'plays next track in list',
         build: build,
         seed: () => const MusicPlayerState(
           tracks: tracks,
           currentTrackIndex: 0,
         ),
         act: (cubit) => cubit.next(),
-        verify: (_) => verify(audioPlayer.seekToNext).called(1),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[1].path),
+              ),
+            ),
+          ),
+        ).called(1),
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'plays first track if current is the last one',
+        build: build,
+        seed: () => const MusicPlayerState(
+          tracks: tracks,
+          currentTrackIndex: 1,
+        ),
+        act: (cubit) => cubit.previous(),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[0].path),
+              ),
+            ),
+          ),
+        ).called(1),
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'plays next track in shuffle list if shuffling is enabled',
+        build: build,
+        seed: () => const MusicPlayerState(
+          tracks: tracks,
+          currentTrackIndex: 1,
+          shuffleIndexes: [1, 0],
+        ),
+        act: (cubit) => cubit.next(),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[0].path),
+              ),
+            ),
+          ),
+        ).called(1),
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'plays first track in shuffle list if shuffling is enabled and '
+        'current track is the last one',
+        build: build,
+        seed: () => const MusicPlayerState(
+          tracks: tracks,
+          currentTrackIndex: 0,
+          shuffleIndexes: [1, 0],
+        ),
+        act: (cubit) => cubit.next(),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[1].path),
+              ),
+            ),
+          ),
+        ).called(1),
       );
     });
 
     group('previous', () {
       blocTest<MusicPlayerCubit, MusicPlayerState>(
-        'calls [audioPlayer.seekToPrevious]',
+        'plays previous track in list',
+        build: build,
+        seed: () => const MusicPlayerState(
+          tracks: tracks,
+          currentTrackIndex: 1,
+        ),
+        act: (cubit) => cubit.previous(),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[0].path),
+              ),
+            ),
+          ),
+        ).called(1),
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'plays last track if current is the first one',
         build: build,
         seed: () => const MusicPlayerState(
           tracks: tracks,
           currentTrackIndex: 0,
         ),
         act: (cubit) => cubit.previous(),
-        verify: (_) => verify(audioPlayer.seekToPrevious).called(1),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[1].path),
+              ),
+            ),
+          ),
+        ).called(1),
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'plays previous track in shuffle list if shuffling is enabled',
+        build: build,
+        seed: () => const MusicPlayerState(
+          tracks: tracks,
+          currentTrackIndex: 0,
+          shuffleIndexes: [0, 1],
+        ),
+        act: (cubit) => cubit.previous(),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[1].path),
+              ),
+            ),
+          ),
+        ).called(1),
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'plays last track in shuffle list if shuffling is enabled and '
+        'current track is the first one',
+        build: build,
+        seed: () => const MusicPlayerState(
+          tracks: tracks,
+          currentTrackIndex: 1,
+          shuffleIndexes: [0, 1],
+        ),
+        act: (cubit) => cubit.previous(),
+        verify: (_) => verify(
+          () => audioPlayer.play(
+            any(
+              that: isA<AssetSource>().having(
+                (s) => s.path,
+                'path',
+                equals(tracks[0].path),
+              ),
+            ),
+          ),
+        ).called(1),
       );
     });
 
@@ -286,7 +441,8 @@ void main() {
       );
 
       blocTest<MusicPlayerCubit, MusicPlayerState>(
-        'calls [audioPlayer.setLoopMode] with [LoopMode.one] when activating',
+        'calls [audioPlayer.setReleaseMode] with [ReleaseMode.loop] '
+        'when activating',
         build: build,
         seed: () => const MusicPlayerState(
           tracks: tracks,
@@ -294,11 +450,13 @@ void main() {
         ),
         act: (cubit) => cubit.toggleLoop(),
         verify: (_) =>
-            verify(() => audioPlayer.setLoopMode(LoopMode.one)).called(1),
+            verify(() => audioPlayer.setReleaseMode(ReleaseMode.loop))
+                .called(1),
       );
 
       blocTest<MusicPlayerCubit, MusicPlayerState>(
-        'calls [audioPlayer.setLoopMode] with [LoopMode.off] when deactivating',
+        'calls [audioPlayer.setReleaseMode] with [ReleaseMode.release] '
+        'when deactivating',
         build: build,
         seed: () => const MusicPlayerState(
           tracks: tracks,
@@ -307,7 +465,8 @@ void main() {
         ),
         act: (cubit) => cubit.toggleLoop(),
         verify: (_) =>
-            verify(() => audioPlayer.setLoopMode(LoopMode.off)).called(1),
+            verify(() => audioPlayer.setReleaseMode(ReleaseMode.release))
+                .called(1),
       );
     });
 
@@ -320,11 +479,11 @@ void main() {
           currentTrackIndex: 0,
         ),
         act: (cubit) => cubit.toggleShuffle(),
-        expect: () => const [
-          MusicPlayerState(
-            tracks: tracks,
-            currentTrackIndex: 0,
-            isShuffle: true,
+        expect: () => [
+          isA<MusicPlayerState>().having(
+            (s) => s.isShuffle,
+            'isShuffle',
+            isTrue,
           ),
         ],
       );
@@ -335,27 +494,16 @@ void main() {
         seed: () => const MusicPlayerState(
           tracks: tracks,
           currentTrackIndex: 0,
-          isShuffle: true,
+          shuffleIndexes: [0],
         ),
         act: (cubit) => cubit.toggleShuffle(),
-        expect: () => const [
-          MusicPlayerState(
-            tracks: tracks,
-            currentTrackIndex: 0,
+        expect: () => [
+          isA<MusicPlayerState>().having(
+            (s) => s.isShuffle,
+            'isShuffle',
+            isFalse,
           ),
         ],
-      );
-
-      blocTest<MusicPlayerCubit, MusicPlayerState>(
-        'calls [audioPlayer.setShuffleModeEnabled]',
-        build: build,
-        seed: () => const MusicPlayerState(
-          tracks: tracks,
-          currentTrackIndex: 0,
-        ),
-        act: (cubit) => cubit.toggleShuffle(),
-        verify: (_) =>
-            verify(() => audioPlayer.setShuffleModeEnabled(true)).called(1),
       );
     });
   });

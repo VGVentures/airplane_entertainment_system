@@ -11,9 +11,20 @@ class AirplaneEntertainmentSystemScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => WeatherBloc(weatherRepository: context.read())
-        ..add(const WeatherUpdatesRequested()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => WeatherBloc(
+            weatherRepository: context.read(),
+          )..add(const WeatherUpdatesRequested()),
+        ),
+        BlocProvider(
+          create: (context) => MusicPlayerCubit(
+            musicRepository: context.read(),
+            player: context.read(),
+          )..initialize(),
+        ),
+      ],
       child: const AirplaneEntertainmentSystemView(),
     );
   }

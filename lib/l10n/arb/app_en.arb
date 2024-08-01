@@ -20,7 +20,26 @@
     "welcomeMessage": "Welcome on board",
     "welcomeSubtitle": "Lunch will be served in\n10 minutes",
     "assistButton": "ASSIST",
+    "clear": "Clear",
+    "@clear": {
+        "description": "The label shown when weather is clear."
+    },
+    "cloudy": "Cloudy",
+    "@cloudy": {
+        "description": "The label shown when weather is cloudy."
+    },
+    "rainy": "Rainy",
+    "@rainy": {
+        "description": "The label shown when weather is rainy."
+    },
     "thunderstorms": "Thunderstorms",
+    "@thunderstorms": {
+        "description": "The label shown when weather is thunderstorms."
+    },
+    "weatherErrorMessage": "Uh oh! There was an error while fetching the weather information.",
+    "@weatherErrorMessage": {
+        "description": "The error message for when the weather information fails to update."
+    },
     "trackingErrorMessage": "Uh oh! There was an error while fetching the flight information.",
     "@trackingErrorMessage": {
         "description": "The error message for when the flight tracking information fails to update."

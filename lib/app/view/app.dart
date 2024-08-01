@@ -6,24 +6,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_repository/music_repository.dart';
+import 'package:weather_repository/weather_repository.dart';
 
 class App extends StatelessWidget {
   const App({
+    required WeatherRepository weatherRepository,
+    required MusicRepository musicRepository,
+    required AudioPlayer audioPlayer,
     required FlightInformationRepository flightInformationRepository,
     super.key,
-  }) : _flightInformationRepository = flightInformationRepository;
+  })  : _weatherRepository = weatherRepository,
+        _musicRepository = musicRepository,
+        _audioPlayer = audioPlayer,
+        _flightInformationRepository = flightInformationRepository;
 
+  final WeatherRepository _weatherRepository;
+  final MusicRepository _musicRepository;
+  final AudioPlayer _audioPlayer;
   final FlightInformationRepository _flightInformationRepository;
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (context) => MusicRepository(),
+        RepositoryProvider.value(
+          value: _weatherRepository,
         ),
-        RepositoryProvider(
-          create: (context) => AudioPlayer(),
+        RepositoryProvider.value(
+          value: _musicRepository,
+        ),
+        RepositoryProvider.value(
+          value: _audioPlayer,
         ),
         RepositoryProvider.value(
           value: _flightInformationRepository,

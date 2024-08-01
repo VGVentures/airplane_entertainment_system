@@ -13,8 +13,8 @@ class AesTheme {
       useMaterial3: true,
       navigationRailTheme: const NavigationRailThemeData(
         labelType: NavigationRailLabelType.none,
-        selectedIconTheme: IconThemeData(size: 36, color: Colors.red),
-        unselectedIconTheme: IconThemeData(size: 36, color: Colors.black),
+        selectedIconTheme: IconThemeData(color: Colors.red),
+        unselectedIconTheme: IconThemeData(color: Colors.black),
         groupAlignment: 0,
       ),
       navigationBarTheme: NavigationBarThemeData(

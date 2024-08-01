@@ -9,6 +9,26 @@
 
 import 'package:flutter/widgets.dart';
 
+class $AssetsWeatherGen {
+  const $AssetsWeatherGen();
+
+  /// File path: assets/weather/clear.png
+  AssetGenImage get clear => const AssetGenImage('assets/weather/clear.png');
+
+  /// File path: assets/weather/cloudy.png
+  AssetGenImage get cloudy => const AssetGenImage('assets/weather/cloudy.png');
+
+  /// File path: assets/weather/rainy.png
+  AssetGenImage get rainy => const AssetGenImage('assets/weather/rainy.png');
+
+  /// File path: assets/weather/thunderstorms.png
+  AssetGenImage get thunderstorms =>
+      const AssetGenImage('assets/weather/thunderstorms.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [clear, cloudy, rainy, thunderstorms];
+}
+
 class Assets {
   Assets._();
 
@@ -18,6 +38,7 @@ class Assets {
   static const AssetGenImage spiderman = AssetGenImage('assets/spiderman.png');
   static const AssetGenImage thunder = AssetGenImage('assets/thunder.png');
   static const AssetGenImage vgvLogo = AssetGenImage('assets/vgv_logo.png');
+  static const $AssetsWeatherGen weather = $AssetsWeatherGen();
 
   /// List of all assets
   static List<dynamic> get values =>
@@ -25,9 +46,16 @@ class Assets {
 }
 
 class AssetGenImage {
-  const AssetGenImage(this._assetName);
+  const AssetGenImage(
+    this._assetName, {
+    this.size,
+    this.flavors = const {},
+  });
 
   final String _assetName;
+
+  final Size? size;
+  final Set<String> flavors;
 
   Image image({
     Key? key,

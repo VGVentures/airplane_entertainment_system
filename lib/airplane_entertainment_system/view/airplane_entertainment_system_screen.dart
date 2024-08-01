@@ -2,18 +2,33 @@ import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/music_player/music_player.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AirplaneEntertainmentSystemScreen extends StatefulWidget {
+class AirplaneEntertainmentSystemScreen extends StatelessWidget {
   const AirplaneEntertainmentSystemScreen({super.key});
 
   @override
-  State<AirplaneEntertainmentSystemScreen> createState() =>
-      _AirplaneEntertainmentSystemScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => WeatherBloc(weatherRepository: context.read())
+        ..add(const WeatherUpdatesRequested()),
+      child: const AirplaneEntertainmentSystemView(),
+    );
+  }
 }
 
-class _AirplaneEntertainmentSystemScreenState
-    extends State<AirplaneEntertainmentSystemScreen> {
+class AirplaneEntertainmentSystemView extends StatefulWidget {
+  const AirplaneEntertainmentSystemView({super.key});
+
+  @override
+  State<AirplaneEntertainmentSystemView> createState() =>
+      _AirplaneEntertainmentSystemViewState();
+}
+
+class _AirplaneEntertainmentSystemViewState
+    extends State<AirplaneEntertainmentSystemView> {
   int _currentPage = 0;
 
   @override
@@ -82,7 +97,7 @@ class _AirplaneEntertainmentSystemScreenState
                     child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 600),
                       opacity: _currentPage == 0 ? 0.8 : 0,
-                      child: const Clouds(
+                      child: const WeatherClouds(
                         key: Key('foregroundClouds'),
                         count: 3,
                         averageScale: 0.25,
@@ -178,7 +193,7 @@ class _ContentPageViewState extends State<_ContentPageView>
   Widget build(BuildContext context) {
     final isSmall = AesLayout.of(context) == AesLayoutData.small;
     final pageSize = widget.pageSize;
-    final pageSide = isSmall ? pageSize.width : pageSize.width.hashCode;
+    final pageSide = isSmall ? pageSize.width : pageSize.height;
     final pageOffset = pageSide / 4;
     final axis = isSmall ? Axis.horizontal : Axis.vertical;
 

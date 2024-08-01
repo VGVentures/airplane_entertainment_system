@@ -1,81 +1,27 @@
-import 'dart:math';
-
-import 'package:meta/meta.dart';
-import 'package:weather_repository/weather_repository.dart';
+import 'package:rxdart/subjects.dart';
+import 'package:weather_api_client/weather_api_client.dart';
 
 /// {@template weather_repository}
-/// Provides (fake) real time information of the weather.
+/// A repository for the weather information.
 /// {@endtemplate}
 class WeatherRepository {
   /// {@macro weather_repository}
-  WeatherRepository({
-    @visibleForTesting Random? random,
-  }) : _random = random ?? Random();
+  WeatherRepository(this._weatherApiClient);
 
-  late WeatherInfo _weather = nextWeatherInfo();
-  final Random _random;
+  final WeatherApiClient _weatherApiClient;
 
-  /// The current weather information.
-  WeatherInfo get weather => _weather;
+  BehaviorSubject<WeatherInformation>? _weatherController;
 
   /// Stream of weather updates.
-  Stream<WeatherInfo> get weatherStream async* {
-    while (true) {
-      await Future<void>.delayed(_interval);
-      final info = nextWeatherInfo(_weather);
-      _weather = info;
-      yield info;
-    }
-  }
+  Stream<WeatherInformation> get weatherInformation {
+    if (_weatherController == null) {
+      _weatherController = BehaviorSubject();
 
-  /// Random interval between 60 and 75 seconds.
-  Duration get _interval {
-    final seconds = _random.nextInt(15) + 60;
-    return Duration(seconds: seconds);
-  }
-
-  /// Returns the next [WeatherInfo] based on the previous one.
-  ///
-  /// The next [WeatherInfo] will be adjacent to the [previous] one.
-  /// If [previous] is `null`, a random [WeatherInfo] is returned.
-  @visibleForTesting
-  WeatherInfo nextWeatherInfo([WeatherInfo? previous]) {
-    if (previous == null) {
-      final random = _random.nextInt(weatherInfos.length);
-      return weatherInfos[random];
+      _weatherApiClient.weatherInformation.listen((weatherInformation) {
+        _weatherController!.add(weatherInformation);
+      });
     }
 
-    final index = weatherInfos.indexOf(previous);
-    if (index == 0) {
-      return weatherInfos[1];
-    } else if (index == weatherInfos.length - 1) {
-      return weatherInfos[weatherInfos.length - 2];
-    } else {
-      final values = [index - 1, index + 1];
-      final random = _random.nextInt(values.length);
-      final nextIndex = values[random];
-      return weatherInfos[nextIndex];
-    }
+    return _weatherController!.stream;
   }
 }
-
-/// List of [WeatherInfo] used to generate the next weather.
-@visibleForTesting
-const weatherInfos = [
-  WeatherInfo(
-    temperature: 77,
-    condition: WeatherCondition.clear,
-  ),
-  WeatherInfo(
-    temperature: 71,
-    condition: WeatherCondition.cloudy,
-  ),
-  WeatherInfo(
-    temperature: 66,
-    condition: WeatherCondition.rainy,
-  ),
-  WeatherInfo(
-    temperature: 62,
-    condition: WeatherCondition.thunderstorms,
-  ),
-];

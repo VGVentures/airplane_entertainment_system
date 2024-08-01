@@ -1,5 +1,7 @@
-/// Provides (fake) real time information of the weather.
+/// A repository for the weather information.
 library;
 
-export 'src/model/model.dart';
+export 'package:weather_api_client/weather_api_client.dart'
+    show WeatherCondition, WeatherInformation;
+
 export 'src/weather_repository.dart';

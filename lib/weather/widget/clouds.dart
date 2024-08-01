@@ -1,43 +1,64 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Image;
+
+enum CloudStyle { none, light, medium, dark }
 
 class Clouds extends StatefulWidget {
   const Clouds({
     required this.count,
     required this.averageScale,
     required this.averageVelocity,
+    this.style = CloudStyle.light,
     super.key,
   });
 
   /// The number of clouds to draw.
   final int count;
 
-  /// The average scale of the clouds. This is sort of an arbitrary number,
-  /// where [1] is a medium sized cloud, and you can give any value greater than
-  /// zero to adjust the average cloud size.
+  /// The average scale of the clouds.
+  ///
+  /// This is sort of an arbitrary number, where [1] is a medium sized cloud,
+  /// and you can give any value greater than zero to adjust the average cloud
+  /// size.
   final double averageScale;
 
-  /// The average velocity of the clouds. This value describes how long it takes
-  /// for an average cloud to go from the top to the botttom of the container.
+  /// The average velocity of the clouds.
+  ///
+  /// This value describes how long it takes for an average cloud to go from
+  /// the top to the bottom of the container.
   /// Clouds with and [averageVelocity] of [1] will take an average of 20
   /// seconds to traverse the container, and you can supply any value greater
   /// than zero to adjust this, where larger values will make the clouds travel
   /// faster.
   final double averageVelocity;
 
+  /// The style that determines the color of the clouds.
+  ///
+  /// [CloudStyle.none] will not draw any clouds.
+  /// [CloudStyle.light] will draw white clouds.
+  /// [CloudStyle.medium] will draw grey clouds.
+  /// [CloudStyle.dark] will draw dark grey clouds.
+  ///
+  /// Defaults to [CloudStyle.light].
+  final CloudStyle style;
+
   @override
   State<Clouds> createState() => _CloudBackgroundState();
 }
 
 class _CloudBackgroundState extends State<Clouds>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _animationController;
+  late final AnimationController _styleController;
 
   /// Indicates that the clouds are generated and ready to be drawn.
   bool ready = false;
-  late final List<Cloud> clouds;
+  late CloudStyle currentStyle = widget.style;
+  CloudStyle? newStyle;
+  final Map<CloudStyle, List<Cloud>> clouds = {};
 
   @override
   void initState() {
@@ -48,22 +69,58 @@ class _CloudBackgroundState extends State<Clouds>
       duration: Duration(seconds: 20 ~/ widget.averageVelocity),
     )..repeat();
 
+    _styleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
     _renderClouds();
   }
 
-  Future<void> _renderClouds() async {
-    clouds = await CloudGenerator().generate(widget.count, widget.averageScale);
+  @override
+  void didUpdateWidget(Clouds oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.style != widget.style) {
+      _switchStyle();
+    }
+  }
 
+  Future<void> _renderClouds() async {
+    final (light, medium, dark) = await (
+      CloudGenerator(color: Colors.white)
+          .generate(widget.count, widget.averageScale),
+      CloudGenerator(color: Colors.grey[400]!)
+          .generate(widget.count, widget.averageScale),
+      CloudGenerator(color: Colors.grey[600]!)
+          .generate(widget.count, widget.averageScale),
+    ).wait;
+
+    clouds[CloudStyle.light] = light;
+    clouds[CloudStyle.medium] = medium;
+    clouds[CloudStyle.dark] = dark;
+
+    setState(() => ready = true);
+  }
+
+  Future<void> _switchStyle() async {
+    newStyle = widget.style;
+    if (currentStyle == newStyle) return;
+
+    await _styleController.forward();
     setState(() {
-      ready = true;
+      currentStyle = newStyle!;
+      newStyle = null;
+      _styleController.reset();
     });
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    for (final cloud in clouds) {
-      cloud.image.dispose();
+    for (final styleClouds in clouds.values) {
+      for (final cloud in styleClouds) {
+        cloud.image.dispose();
+      }
     }
 
     super.dispose();
@@ -72,15 +129,31 @@ class _CloudBackgroundState extends State<Clouds>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _animationController,
+      animation: Listenable.merge([
+        _animationController,
+        _styleController,
+      ]),
       builder: (context, _) {
-        return CustomPaint(
-          painter: ready
-              ? _CloudsPainter(
-                  t: _animationController.value,
-                  clouds: clouds,
-                )
-              : null,
+        return Stack(
+          children: [
+            for (final style in clouds.keys)
+              if ([currentStyle, newStyle].contains(style))
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: style == currentStyle
+                        ? 1 - _styleController.value
+                        : _styleController.value,
+                    child: CustomPaint(
+                      painter: ready
+                          ? _CloudsPainter(
+                              t: _animationController.value,
+                              clouds: clouds[style]!,
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+          ],
         );
       },
     );
@@ -116,9 +189,13 @@ class _CloudsPainter extends CustomPainter {
 }
 
 class CloudGenerator {
-  CloudGenerator([Random? random]) : random = random ?? Random();
+  CloudGenerator({
+    required this.color,
+    Random? random,
+  }) : random = random ?? Random();
 
   final Random random;
+  final Color color;
 
   static const _maxRelativeRadius = 1 / 4;
 
@@ -169,8 +246,8 @@ class CloudGenerator {
     final opacity = 0.05 + random.nextDouble() / 10;
     final gradient = RadialGradient(
       colors: [
-        Colors.white.withOpacity(opacity),
-        Colors.white.withOpacity(0),
+        color.withOpacity(opacity),
+        color.withOpacity(0),
       ],
       stops: const [0.6, 1],
     );

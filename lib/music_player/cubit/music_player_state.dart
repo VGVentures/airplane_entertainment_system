@@ -4,18 +4,22 @@ class MusicPlayerState extends Equatable {
   const MusicPlayerState({
     this.tracks = const [],
     this.currentTrackIndex,
+    this.duration,
     this.progress = 0.0,
     this.isPlaying = false,
     this.isLoop = false,
-    this.isShuffle = false,
+    this.shuffleIndexes = const [],
   });
 
   final List<MusicTrack> tracks;
   final int? currentTrackIndex;
+  final Duration? duration;
   final double progress;
   final bool isPlaying;
   final bool isLoop;
-  final bool isShuffle;
+  final List<int> shuffleIndexes;
+
+  bool get isShuffle => shuffleIndexes.isNotEmpty;
 
   MusicTrack? get currentTrack => tracks.isNotEmpty && currentTrackIndex != null
       ? tracks[currentTrackIndex!]
@@ -26,26 +30,29 @@ class MusicPlayerState extends Equatable {
         tracks,
         currentTrackIndex,
         isPlaying,
+        duration,
         progress,
         isLoop,
-        isShuffle,
+        shuffleIndexes,
       ];
 
   MusicPlayerState copyWith({
     List<MusicTrack>? tracks,
     int? currentTrackIndex,
+    Duration? duration,
     double? progress,
     bool? isPlaying,
     bool? isLoop,
-    bool? isShuffle,
+    List<int>? shuffleIndexes,
   }) {
     return MusicPlayerState(
       tracks: tracks ?? this.tracks,
       currentTrackIndex: currentTrackIndex ?? this.currentTrackIndex,
       isPlaying: isPlaying ?? this.isPlaying,
+      duration: duration ?? this.duration,
       progress: progress ?? this.progress,
       isLoop: isLoop ?? this.isLoop,
-      isShuffle: isShuffle ?? this.isShuffle,
+      shuffleIndexes: shuffleIndexes ?? this.shuffleIndexes,
     );
   }
 }

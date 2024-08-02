@@ -5,7 +5,6 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:music_repository/music_repository.dart';
 
@@ -21,30 +20,23 @@ void main() {
   ];
 
   group('MusicPlayerPage', () {
-    late MusicRepository musicRepository;
-    late AudioPlayer audioPlayer;
+    late MusicPlayerCubit cubit;
 
     setUp(() {
-      musicRepository = MockMusicRepository();
-      when(musicRepository.getTracks).thenReturn(tracks);
-
-      audioPlayer = MockAudioPlayer();
-      when(() => audioPlayer.audioSource).thenReturn(HlsAudioSource(Uri()));
-      when(() => audioPlayer.positionStream)
-          .thenAnswer((_) => const Stream.empty());
-      when(() => audioPlayer.playingStream)
-          .thenAnswer((_) => const Stream.empty());
-      when(() => audioPlayer.currentIndexStream)
-          .thenAnswer((_) => const Stream.empty());
+      cubit = _MockMusicPlayerCubit();
+      when(() => cubit.state).thenReturn(
+        const MusicPlayerState(tracks: tracks, currentTrackIndex: 0),
+      );
     });
 
-    testWidgets('contains MusicPlayerPage', (tester) async {
+    testWidgets('contains MusicPlayerView', (tester) async {
       await tester.pumpApp(
-        const Scaffold(
-          body: MusicPlayerPage(),
+        Scaffold(
+          body: BlocProvider.value(
+            value: cubit,
+            child: const MusicPlayerPage(),
+          ),
         ),
-        musicRepository: musicRepository,
-        audioPlayer: audioPlayer,
       );
 
       expect(find.byType(MusicMenuView), findsOneWidget);
@@ -53,15 +45,14 @@ void main() {
 
     testWidgets('when screen size is small, player is shown in a bottom sheet',
         (tester) async {
-      when(() => audioPlayer.currentIndexStream)
-          .thenAnswer((_) => Stream.value(0));
       await tester.pumpApp(
-        const Scaffold(
-          body: MusicPlayerPage(),
+        Scaffold(
+          body: BlocProvider.value(
+            value: cubit,
+            child: const MusicPlayerPage(),
+          ),
         ),
         layout: AesLayoutData.small,
-        musicRepository: musicRepository,
-        audioPlayer: audioPlayer,
       );
 
       final playerFinder = find.byType(MusicPlayerView);

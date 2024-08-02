@@ -1,10 +1,10 @@
 import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flight_information_repository/flight_information_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:music_repository/music_repository.dart';
 import 'package:weather_repository/weather_repository.dart';

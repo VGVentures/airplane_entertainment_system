@@ -445,11 +445,13 @@ class _MusicMenuHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.goodVibes,
-          style: AesTextStyles.headlineLarge,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 2,
+        FittedBox(
+          child: Text(
+            l10n.goodVibes,
+            style: AesTextStyles.headlineLarge,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
         ),
         const SizedBox(height: 10),
         Text(

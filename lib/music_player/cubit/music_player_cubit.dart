@@ -18,6 +18,8 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
         _player.onPlayerStateChanged.listen(_onIsPlayingChanged);
     _progressSubscription =
         _player.onPositionChanged.listen(_onProgressChanged);
+
+    _player.setVolume(1);
   }
 
   final MusicRepository _musicRepository;
@@ -153,6 +155,12 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
           List<int>.generate(state.tracks.length, (index) => index)..shuffle();
       emit(state.copyWith(shuffleIndexes: shuffledIndexes));
     }
+  }
+
+  void toggleMute() {
+    final mute = !state.mute;
+    _player.setVolume(mute ? 0 : 1);
+    emit(state.copyWith(mute: mute));
   }
 
   @override

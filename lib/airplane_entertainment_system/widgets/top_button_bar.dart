@@ -1,5 +1,5 @@
+import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/generated/assets.gen.dart';
-import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class TopButtonBar extends StatelessWidget {
@@ -17,10 +17,7 @@ class TopButtonBar extends StatelessWidget {
           children: [
             Assets.vgvLogo.image(width: 40, height: 40),
             const SizedBox(width: 24),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.volume_up),
-            ),
+            const MuteButton(),
           ],
         ),
       ),

@@ -449,8 +449,6 @@ class _MusicMenuHeader extends StatelessWidget {
           child: Text(
             l10n.goodVibes,
             style: AesTextStyles.headlineLarge,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
           ),
         ),
         const SizedBox(height: 10),

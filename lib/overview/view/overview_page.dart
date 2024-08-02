@@ -97,9 +97,7 @@ class WelcomeCopy extends StatelessWidget {
         FittedBox(
           child: Text(
             l10n.welcomeMessage,
-            maxLines: 2,
             style: AesTextStyles.headlineLarge,
-            overflow: TextOverflow.ellipsis,
           ),
         ),
         const SizedBox(height: 10),

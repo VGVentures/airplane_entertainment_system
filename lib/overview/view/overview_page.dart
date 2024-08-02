@@ -94,11 +94,11 @@ class WelcomeCopy extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 50),
-        Text(
-          l10n.welcomeMessage,
-          maxLines: 2,
-          style: AesTextStyles.headlineLarge,
-          overflow: TextOverflow.ellipsis,
+        FittedBox(
+          child: Text(
+            l10n.welcomeMessage,
+            style: AesTextStyles.headlineLarge,
+          ),
         ),
         const SizedBox(height: 10),
         Text(

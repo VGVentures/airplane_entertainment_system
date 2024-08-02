@@ -43,5 +43,13 @@
     "trackingErrorMessage": "Uh oh! There was an error while fetching the flight information.",
     "@trackingErrorMessage": {
         "description": "The error message for when the flight tracking information fails to update."
+    },
+    "overviewLabel": "Home",
+    "@homeLabel": {
+        "description": "The label for the overview tab."
+    },
+    "musicLabel": "Music",
+    "@musicLabel": {
+        "description": "The label for the music tab."
     }
 }

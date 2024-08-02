@@ -9,6 +9,7 @@ class MusicPlayerState extends Equatable {
     this.isPlaying = false,
     this.isLoop = false,
     this.shuffleIndexes = const [],
+    this.mute = false,
   });
 
   final List<MusicTrack> tracks;
@@ -18,6 +19,7 @@ class MusicPlayerState extends Equatable {
   final bool isPlaying;
   final bool isLoop;
   final List<int> shuffleIndexes;
+  final bool mute;
 
   bool get isShuffle => shuffleIndexes.isNotEmpty;
 
@@ -34,6 +36,7 @@ class MusicPlayerState extends Equatable {
         progress,
         isLoop,
         shuffleIndexes,
+        mute,
       ];
 
   MusicPlayerState copyWith({
@@ -44,6 +47,7 @@ class MusicPlayerState extends Equatable {
     bool? isPlaying,
     bool? isLoop,
     List<int>? shuffleIndexes,
+    bool? mute,
   }) {
     return MusicPlayerState(
       tracks: tracks ?? this.tracks,
@@ -53,6 +57,7 @@ class MusicPlayerState extends Equatable {
       progress: progress ?? this.progress,
       isLoop: isLoop ?? this.isLoop,
       shuffleIndexes: shuffleIndexes ?? this.shuffleIndexes,
+      mute: mute ?? this.mute,
     );
   }
 }

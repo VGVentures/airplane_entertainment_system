@@ -47,6 +47,7 @@ void main() {
 
       audioCache = _MockAudioCache();
       when(() => audioPlayer.audioCache).thenReturn(audioCache);
+      when(() => audioPlayer.setVolume(any())).thenAnswer((_) async {});
     });
 
     MusicPlayerCubit build() => MusicPlayerCubit(
@@ -501,6 +502,37 @@ void main() {
           isA<MusicPlayerState>().having(
             (s) => s.isShuffle,
             'isShuffle',
+            isFalse,
+          ),
+        ],
+      );
+    });
+
+    group('toggle mute', () {
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'updates [mute] to true when it is false',
+        build: build,
+        act: (cubit) => cubit.toggleMute(),
+        expect: () => [
+          isA<MusicPlayerState>().having(
+            (s) => s.mute,
+            'mute',
+            isTrue,
+          ),
+        ],
+      );
+
+      blocTest<MusicPlayerCubit, MusicPlayerState>(
+        'updates [mute] to false when it is true',
+        build: build,
+        seed: () => const MusicPlayerState(
+          mute: true,
+        ),
+        act: (cubit) => cubit.toggleMute(),
+        expect: () => [
+          isA<MusicPlayerState>().having(
+            (s) => s.mute,
+            'mute',
             isFalse,
           ),
         ],

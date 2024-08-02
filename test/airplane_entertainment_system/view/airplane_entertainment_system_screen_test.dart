@@ -2,8 +2,11 @@ import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/music_player/music_player.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
+import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:music_repository/music_repository.dart';
@@ -12,6 +15,14 @@ import 'package:weather_repository/weather_repository.dart';
 import '../../helpers/helpers.dart';
 
 class _MockAudioCache extends Mock implements AudioCache {}
+
+class _MockAudioPlayer extends Mock implements AudioPlayer {}
+
+class _MockWeatherBloc extends MockBloc<WeatherEvent, WeatherState>
+    implements WeatherBloc {}
+
+class _MockMusicPlayerCubit extends MockCubit<MusicPlayerState>
+    implements MusicPlayerCubit {}
 
 void main() {
   group('$AirplaneEntertainmentSystemScreen', () {
@@ -27,7 +38,7 @@ void main() {
       musicRepository = MockMusicRepository();
       when(musicRepository.getTracks).thenReturn(const []);
 
-      audioPlayer = MockAudioPlayer();
+      audioPlayer = _MockAudioPlayer();
       when(() => audioPlayer.onPositionChanged)
           .thenAnswer((_) => const Stream.empty());
       when(() => audioPlayer.onPlayerStateChanged)
@@ -36,14 +47,29 @@ void main() {
 
       final audioCache = _MockAudioCache();
       when(() => audioPlayer.audioCache).thenReturn(audioCache);
+      when(() => audioPlayer.setVolume(any())).thenAnswer((_) async {});
     });
 
-    testWidgets('shows $AesNavigationRail on large screens', (tester) async {
-      await tester.binding.setSurfaceSize(const Size(1600, 1200));
+    testWidgets('finds one AirplaneEntertainmentSystemView Widget',
+        (tester) async {
       await tester.pumpApp(
         const AirplaneEntertainmentSystemScreen(),
-        layout: AesLayoutData.large,
+        layout: AesLayoutData.small,
+        musicRepository: musicRepository,
         weatherRepository: weatherRepository,
+        audioPlayer: audioPlayer,
+      );
+
+      expect(find.byType(AirplaneEntertainmentSystemView), findsOneWidget);
+    });
+  });
+
+  group('$AirplaneEntertainmentSystemView', () {
+    testWidgets('shows $AesNavigationRail on large screens', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1600, 1200));
+      await tester.pumpSubject(
+        const AirplaneEntertainmentSystemView(),
+        AesLayoutData.large,
       );
 
       expect(find.byType(AesNavigationRail), findsOneWidget);
@@ -51,52 +77,45 @@ void main() {
 
     testWidgets('shows $AesBottomNavigationBar on small screens',
         (tester) async {
-      await tester.pumpApp(
-        const AirplaneEntertainmentSystemScreen(),
-        layout: AesLayoutData.small,
-        weatherRepository: weatherRepository,
+      await tester.pumpSubject(
+        const AirplaneEntertainmentSystemView(),
+        AesLayoutData.small,
       );
 
       expect(find.byType(AesBottomNavigationBar), findsOneWidget);
     });
 
     testWidgets('shows TopButtonBar', (tester) async {
-      await tester.pumpApp(
-        const AirplaneEntertainmentSystemScreen(),
-        layout: AesLayoutData.small,
-        weatherRepository: weatherRepository,
+      await tester.pumpSubject(
+        const AirplaneEntertainmentSystemView(),
+        AesLayoutData.small,
       );
 
       expect(find.byType(TopButtonBar), findsOneWidget);
     });
 
     testWidgets('contains background', (tester) async {
-      await tester.pumpApp(
-        const AirplaneEntertainmentSystemScreen(),
-        layout: AesLayoutData.small,
-        weatherRepository: weatherRepository,
+      await tester.pumpSubject(
+        const AirplaneEntertainmentSystemView(),
+        AesLayoutData.small,
       );
 
       expect(find.byType(SystemBackground), findsOneWidget);
     });
 
     testWidgets('shows OverviewPage initially', (tester) async {
-      await tester.pumpApp(
-        const AirplaneEntertainmentSystemScreen(),
-        layout: AesLayoutData.small,
-        weatherRepository: weatherRepository,
+      await tester.pumpSubject(
+        const AirplaneEntertainmentSystemView(),
+        AesLayoutData.small,
       );
 
       expect(find.byType(OverviewPage), findsOneWidget);
     });
 
     testWidgets('shows MusicPlayerPage when icon is selected', (tester) async {
-      await tester.pumpApp(
-        const AirplaneEntertainmentSystemScreen(),
-        layout: AesLayoutData.small,
-        weatherRepository: weatherRepository,
-        musicRepository: musicRepository,
-        audioPlayer: audioPlayer,
+      await tester.pumpSubject(
+        const AirplaneEntertainmentSystemView(),
+        AesLayoutData.small,
       );
 
       await tester.tap(find.byIcon(Icons.music_note));
@@ -110,12 +129,9 @@ void main() {
       testWidgets(
           'shows $OverviewPage when icon is '
           'selected for $layout layout', (tester) async {
-        await tester.pumpApp(
-          const AirplaneEntertainmentSystemScreen(),
-          layout: layout,
-          weatherRepository: weatherRepository,
-          musicRepository: musicRepository,
-          audioPlayer: audioPlayer,
+        await tester.pumpSubject(
+          const AirplaneEntertainmentSystemView(),
+          layout,
         );
 
         await tester.tap(find.byIcon(Icons.music_note));
@@ -128,4 +144,25 @@ void main() {
       });
     }
   });
+}
+
+extension on WidgetTester {
+  Future<void> pumpSubject(Widget widget, AesLayoutData layout) {
+    final MusicPlayerCubit musicPlayerCubit = _MockMusicPlayerCubit();
+    when(() => musicPlayerCubit.state).thenReturn(const MusicPlayerState());
+
+    final WeatherBloc weatherBloc = _MockWeatherBloc();
+    when(() => weatherBloc.state).thenReturn(const WeatherState());
+
+    return pumpApp(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: musicPlayerCubit),
+          BlocProvider.value(value: weatherBloc),
+        ],
+        child: widget,
+      ),
+      layout: layout,
+    );
+  }
 }

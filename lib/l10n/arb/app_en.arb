@@ -19,7 +19,6 @@
     "songs": "songs",
     "welcomeMessage": "Welcome on board",
     "welcomeSubtitle": "Lunch will be served in\n10 minutes",
-    "assistButton": "ASSIST",
     "clear": "Clear",
     "@clear": {
         "description": "The label shown when weather is clear."

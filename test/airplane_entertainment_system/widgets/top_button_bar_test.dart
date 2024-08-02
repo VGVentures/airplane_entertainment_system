@@ -1,53 +1,39 @@
 import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
+import 'package:airplane_entertainment_system/music_player/music_player.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/helpers.dart';
 
+class _MockMusicPlayerCubit extends MockCubit<MusicPlayerState>
+    implements MusicPlayerCubit {}
+
 void main() {
-  group('TopButtonBar', () {
-    testWidgets('contains power button', (tester) async {
-      await tester.pumpApp(
-        const Scaffold(
-          body: TopButtonBar(),
-        ),
-      );
-
-      expect(find.byIcon(Icons.power_settings_new), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.power_settings_new));
-    });
-
-    testWidgets('contains brightness button', (tester) async {
-      await tester.pumpApp(
-        const Scaffold(
-          body: TopButtonBar(),
-        ),
-      );
-
-      expect(find.byIcon(Icons.brightness_7), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.brightness_7));
-    });
-
+  group('$TopButtonBar', () {
     testWidgets('contains volume button', (tester) async {
-      await tester.pumpApp(
-        const Scaffold(
-          body: TopButtonBar(),
-        ),
-      );
+      await tester.pumpSubject();
 
       expect(find.byIcon(Icons.volume_up), findsOneWidget);
       await tester.tap(find.byIcon(Icons.volume_up));
     });
+  });
+}
 
-    testWidgets('contains assist button', (tester) async {
-      await tester.pumpApp(
-        const Scaffold(
+extension on WidgetTester {
+  Future<void> pumpSubject() {
+    final MusicPlayerCubit musicPlayerCubit = _MockMusicPlayerCubit();
+    when(() => musicPlayerCubit.state).thenReturn(const MusicPlayerState());
+
+    return pumpApp(
+      BlocProvider.value(
+        value: musicPlayerCubit,
+        child: const Scaffold(
           body: TopButtonBar(),
         ),
-      );
-
-      expect(find.byIcon(Icons.support), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.support));
-    });
-  });
+      ),
+    );
+  }
 }

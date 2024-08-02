@@ -32,6 +32,7 @@ class AirplaneEntertainmentSystemScreen extends StatelessWidget {
 }
 
 class AirplaneEntertainmentSystemView extends StatefulWidget {
+  @visibleForTesting
   const AirplaneEntertainmentSystemView({super.key});
 
   @override

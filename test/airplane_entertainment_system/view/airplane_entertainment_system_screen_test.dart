@@ -2,14 +2,16 @@ import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/music_player/music_player.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:music_repository/music_repository.dart';
 import 'package:weather_repository/weather_repository.dart';
 
 import '../../helpers/helpers.dart';
+
+class _MockAudioCache extends Mock implements AudioCache {}
 
 void main() {
   group('$AirplaneEntertainmentSystemScreen', () {
@@ -26,13 +28,14 @@ void main() {
       when(musicRepository.getTracks).thenReturn(const []);
 
       audioPlayer = MockAudioPlayer();
-      when(() => audioPlayer.audioSource).thenReturn(HlsAudioSource(Uri()));
-      when(() => audioPlayer.positionStream)
+      when(() => audioPlayer.onPositionChanged)
           .thenAnswer((_) => const Stream.empty());
-      when(() => audioPlayer.playingStream)
+      when(() => audioPlayer.onPlayerStateChanged)
           .thenAnswer((_) => const Stream.empty());
-      when(() => audioPlayer.currentIndexStream)
-          .thenAnswer((_) => const Stream.empty());
+      when(audioPlayer.release).thenAnswer((_) async {});
+
+      final audioCache = _MockAudioCache();
+      when(() => audioPlayer.audioCache).thenReturn(audioCache);
     });
 
     testWidgets('shows $AesNavigationRail on large screens', (tester) async {

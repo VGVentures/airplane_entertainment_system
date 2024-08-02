@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:music_repository/music_repository.dart';
 
 part 'music_player_state.dart';
@@ -14,47 +14,36 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
   })  : _musicRepository = musicRepository,
         _player = player,
         super(const MusicPlayerState()) {
-    _isPlayingSubscription = _player.playingStream.listen(_onIsPlayingChanged);
-    _progressSubscription = _player.positionStream.listen(_onProgressChanged);
-    _trackSubscription =
-        _player.currentIndexStream.listen(_onTrackIndexChanged);
+    _isPlayingSubscription =
+        _player.onPlayerStateChanged.listen(_onIsPlayingChanged);
+    _progressSubscription =
+        _player.onPositionChanged.listen(_onProgressChanged);
   }
 
   final MusicRepository _musicRepository;
-  late final StreamSubscription<bool> _isPlayingSubscription;
+  late final StreamSubscription<PlayerState> _isPlayingSubscription;
   late final StreamSubscription<Duration> _progressSubscription;
-  late final StreamSubscription<int?> _trackSubscription;
   final AudioPlayer _player;
 
-  void _onIsPlayingChanged(bool isPlaying) {
-    emit(state.copyWith(isPlaying: isPlaying));
+  void _onIsPlayingChanged(PlayerState playerState) {
+    if (playerState == PlayerState.completed) {
+      if (!state.isLoop) next();
+    } else {
+      emit(state.copyWith(isPlaying: playerState == PlayerState.playing));
+    }
   }
 
   void _onProgressChanged(Duration position) {
-    final duration = _player.duration;
-    if (duration == null || duration.inMilliseconds == 0) return;
-    final progress = position.inMilliseconds / duration.inMilliseconds;
+    final duration = state.duration;
+    if (duration == null || duration.inSeconds == 0) return;
+    final progress = position.inSeconds / duration.inSeconds;
     emit(state.copyWith(progress: progress));
   }
 
-  void _onTrackIndexChanged(int? index) {
-    if (index == null) {
-      emit(MusicPlayerState(tracks: state.tracks));
-    } else {
-      emit(state.copyWith(currentTrackIndex: index));
-    }
-  }
-
   void initialize() {
+    // Allows loading assets from another package.
+    _player.audioCache.prefix = '';
     final tracks = _musicRepository.getTracks();
-
-    if (_player.audioSource == null) {
-      final playlist = ConcatenatingAudioSource(
-        children: tracks.map((track) => AudioSource.asset(track.path)).toList(),
-      );
-      _player.setAudioSource(playlist);
-    }
-
     emit(state.copyWith(tracks: tracks));
   }
 
@@ -62,54 +51,115 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     if (track == state.currentTrack) {
       return togglePlayPause();
     }
-    _player
-      ..seek(Duration.zero, index: track.index)
-      ..play();
+    _loadAndPlayTrack(track);
+  }
+
+  Future<void> _loadAndPlayTrack(MusicTrack track) async {
+    await _player.play(AssetSource(track.path));
+    final duration = await _player.getDuration();
+    emit(
+      state.copyWith(
+        currentTrackIndex: state.tracks.indexOf(track),
+        duration: duration,
+      ),
+    );
   }
 
   void togglePlayPause() {
-    if (state.currentTrack == null) return;
+    if (state.currentTrack == null) {
+      playTrack(state.tracks.first);
+    }
     if (state.isPlaying) {
       _player.pause();
     } else {
-      _player.play();
+      _player.resume();
     }
   }
 
   void seek(double progress) {
-    final duration = _player.duration;
+    final duration = state.duration;
     if (duration != null) {
       _player.seek(duration * progress);
     }
   }
 
   void next() {
-    if (state.currentTrack == null) return;
-    _player.seekToNext();
+    final currentTrackIndex = state.currentTrackIndex;
+    if (currentTrackIndex == null) return;
+
+    final nextTrackIndex = _nextTrackIndex();
+    final nextTrack = state.tracks[nextTrackIndex];
+    _loadAndPlayTrack(nextTrack);
+
+    emit(state.copyWith(currentTrackIndex: nextTrackIndex));
+  }
+
+  int _nextTrackIndex() {
+    final currentTrackIndex = state.currentTrackIndex;
+    if (currentTrackIndex == null) return 0;
+
+    if (state.isShuffle) {
+      final currentShuffleIndex =
+          state.shuffleIndexes.indexOf(currentTrackIndex);
+      final nextShuffleIndex =
+          (currentShuffleIndex + 1) % state.shuffleIndexes.length;
+      return state.shuffleIndexes[nextShuffleIndex];
+    } else {
+      return (currentTrackIndex + 1) % state.tracks.length;
+    }
   }
 
   void previous() {
-    if (state.currentTrack == null) return;
-    _player.seekToPrevious();
+    final currentTrackIndex = state.currentTrackIndex;
+    if (currentTrackIndex == null) return;
+
+    final previousTrackIndex = _previousTrackIndex();
+    final previousTrack = state.tracks[previousTrackIndex];
+    _loadAndPlayTrack(previousTrack);
+
+    emit(state.copyWith(currentTrackIndex: previousTrackIndex));
+  }
+
+  int _previousTrackIndex() {
+    final currentTrackIndex = state.currentTrackIndex;
+    if (currentTrackIndex == null) return 0;
+
+    if (state.isShuffle) {
+      final currentShuffleIndex =
+          state.shuffleIndexes.indexOf(currentTrackIndex);
+      final previousShuffleIndex = currentShuffleIndex == 0
+          ? state.shuffleIndexes.length - 1
+          : currentShuffleIndex - 1;
+      return state.shuffleIndexes[previousShuffleIndex];
+    } else {
+      return currentTrackIndex == 0
+          ? state.tracks.length - 1
+          : currentTrackIndex - 1;
+    }
   }
 
   void toggleLoop() {
-    final loop = !state.isLoop;
-    _player.setLoopMode(loop ? LoopMode.one : LoopMode.off);
-    emit(state.copyWith(isLoop: !state.isLoop));
+    final isLoop = !state.isLoop;
+    final releaseMode = isLoop ? ReleaseMode.loop : ReleaseMode.release;
+    _player.setReleaseMode(releaseMode);
+    emit(state.copyWith(isLoop: isLoop));
   }
 
   void toggleShuffle() {
-    final shuffle = !state.isShuffle;
-    _player.setShuffleModeEnabled(shuffle);
-    emit(state.copyWith(isShuffle: !state.isShuffle));
+    if (state.isShuffle) {
+      emit(state.copyWith(shuffleIndexes: []));
+    } else {
+      final shuffledIndexes =
+          List<int>.generate(state.tracks.length, (index) => index)..shuffle();
+      emit(state.copyWith(shuffleIndexes: shuffledIndexes));
+    }
   }
 
   @override
   Future<void> close() {
     _isPlayingSubscription.cancel();
     _progressSubscription.cancel();
-    _trackSubscription.cancel();
+    _player.release();
     return super.close();
   }
 }

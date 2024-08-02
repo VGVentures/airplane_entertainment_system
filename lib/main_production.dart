@@ -1,8 +1,8 @@
 import 'package:airplane_entertainment_system/app/app.dart';
 import 'package:airplane_entertainment_system/bootstrap.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flight_api_client/flight_api_client.dart';
 import 'package:flight_information_repository/flight_information_repository.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:music_repository/music_repository.dart';
 import 'package:weather_api_client/weather_api_client.dart';
 import 'package:weather_repository/weather_repository.dart';

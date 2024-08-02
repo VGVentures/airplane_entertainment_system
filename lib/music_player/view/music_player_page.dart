@@ -12,22 +12,12 @@ class MusicPlayerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final layout = AesLayout.of(context);
 
-    return BlocProvider(
-      create: (_) => MusicPlayerCubit(
-        musicRepository: context.read(),
-        player: context.read(),
-      )..initialize(),
-      child: Builder(
-        builder: (context) {
-          return switch (layout) {
-            AesLayoutData.small => const _SmallMusicPlayerPage(),
-            AesLayoutData.medium ||
-            AesLayoutData.large =>
-              const _LargeMusicPlayerPage(),
-          };
-        },
-      ),
-    );
+    return switch (layout) {
+      AesLayoutData.small => const _SmallMusicPlayerPage(),
+      AesLayoutData.medium ||
+      AesLayoutData.large =>
+        const _LargeMusicPlayerPage(),
+    };
   }
 }
 

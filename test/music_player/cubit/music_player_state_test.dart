@@ -19,7 +19,7 @@ void main() {
             progress: 10,
             isPlaying: true,
             isLoop: true,
-            isShuffle: true,
+            shuffleIndexes: const [0, 2, 1],
           ),
           MusicPlayerState(
             tracks: tracks,
@@ -27,7 +27,7 @@ void main() {
             progress: 10,
             isPlaying: true,
             isLoop: true,
-            isShuffle: true,
+            shuffleIndexes: const [0, 2, 1],
           ),
         );
       });
@@ -41,7 +41,7 @@ void main() {
             progress: 10,
             isPlaying: true,
             isLoop: true,
-            isShuffle: true,
+            shuffleIndexes: const [0, 2, 1],
           ),
           isNot(MusicPlayerState()),
         );

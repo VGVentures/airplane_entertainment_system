@@ -1,5 +1,6 @@
 import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
+import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:airplane_entertainment_system/music_player/music_player.dart';
 import 'package:airplane_entertainment_system/overview/overview.dart';
 import 'package:airplane_entertainment_system/weather/weather.dart';
@@ -34,15 +35,16 @@ class _AirplaneEntertainmentSystemViewState
   @override
   Widget build(BuildContext context) {
     final layout = AesLayout.of(context);
+    final l10n = context.l10n;
 
-    const destinations = <Destination>[
+    final destinations = <Destination>[
       Destination(
-        Icon(Icons.airplanemode_active_outlined),
-        'Home',
+        const Icon(Icons.airplanemode_active_outlined),
+        l10n.overviewLabel,
       ),
       Destination(
-        Icon(Icons.music_note),
-        'Music',
+        const Icon(Icons.music_note),
+        l10n.musicLabel,
       ),
     ];
 

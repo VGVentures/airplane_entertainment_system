@@ -70,7 +70,7 @@ void main() {
       when(() => navigationShell.currentIndex).thenReturn(0);
     });
 
-    testWidgets('finds one AirplaneEntertainmentSystemView Widget',
+    testWidgets('finds one $AirplaneEntertainmentSystemView Widget',
         (tester) async {
       await tester.pumpApp(
         AirplaneEntertainmentSystemScreen(
@@ -137,7 +137,7 @@ void main() {
       expect(find.byType(AesBottomNavigationBar), findsOneWidget);
     });
 
-    testWidgets('shows TopButtonBar', (tester) async {
+    testWidgets('shows $TopButtonBar', (tester) async {
       await tester.pumpSubject(
         AirplaneEntertainmentSystemView(
           navigationShell,
@@ -167,7 +167,7 @@ void main() {
       expect(find.byType(SystemBackground), findsOneWidget);
     });
 
-    testWidgets('shows OverviewPage initially', (tester) async {
+    testWidgets('$OverviewPage selected initially', (tester) async {
       await tester.pumpSubject(
         AirplaneEntertainmentSystemView(
           navigationShell,
@@ -179,10 +179,16 @@ void main() {
         AesLayoutData.small,
       );
 
-      expect(find.byType(OverviewPage), findsOneWidget);
+      expect(
+        tester.widget(find.byType(NavigationBar)),
+        isA<NavigationBar>()
+            .having((widget) => widget.selectedIndex, 'index', 0),
+      );
     });
 
-    testWidgets('shows MusicPlayerPage when icon is selected', (tester) async {
+    testWidgets(
+        'verify navigation to $MusicPlayerPage '
+        'when icon is selected', (tester) async {
       await tester.pumpSubject(
         AirplaneEntertainmentSystemView(
           navigationShell,
@@ -195,15 +201,14 @@ void main() {
       );
 
       await tester.tap(find.byIcon(Icons.music_note));
-      await tester.pump();
       await tester.pump(const Duration(milliseconds: 350));
 
-      expect(find.byType(MusicPlayerPage), findsOneWidget);
+      verify(() => navigationShell.goBranch(1)).called(1);
     });
 
     for (final layout in AesLayoutData.values) {
       testWidgets(
-          'shows $OverviewPage when icon is '
+          'verify navigation to $OverviewPage when icon is '
           'selected for $layout layout', (tester) async {
         await tester.pumpSubject(
           AirplaneEntertainmentSystemView(
@@ -219,10 +224,13 @@ void main() {
         await tester.tap(find.byIcon(Icons.music_note));
         await tester.pump(const Duration(milliseconds: 300));
 
+        verify(() => navigationShell.goBranch(1)).called(1);
+
         await tester.tap(find.byIcon(Icons.airplanemode_active_outlined));
         await tester.pump(const Duration(milliseconds: 300));
 
-        expect(find.byType(OverviewPage), findsOneWidget);
+        verify(() => navigationShell.goBranch(0, initialLocation: true))
+            .called(1);
       });
     }
   });

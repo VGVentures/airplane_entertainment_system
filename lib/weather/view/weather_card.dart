@@ -12,7 +12,7 @@ class WeatherCard extends StatelessWidget {
     final l10n = context.l10n;
 
     return SizedBox(
-      height: 200,
+      height: 150,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: BlocBuilder<WeatherBloc, WeatherState>(
@@ -31,25 +31,36 @@ class WeatherCard extends StatelessWidget {
             }
 
             return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: _WeatherDetails(
-                    temperature: state.weatherInfo!.temperature.toString(),
-                    label: state.weatherInfo!.conditionLabel(l10n),
+                Flexible(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: _WeatherDetails(
+                      temperature: state.weatherInfo!.temperature.toString(),
+                      label: state.weatherInfo!.conditionLabel(l10n),
+                    ),
                   ),
                 ),
-                const Spacer(),
-                SizedBox(
-                  width: 148,
-                  height: 200,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 600),
-                    child: _WeatherIllustration(
-                      key: ValueKey(state.weatherInfo!.condition),
-                      gradient: state.weatherInfo!.gradient,
-                      imageAsset: state.weatherInfo!.imageAsset,
+                Flexible(
+                  flex: 2,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+                    child: SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 600),
+                        child: _WeatherIllustration(
+                          key: ValueKey(state.weatherInfo!.condition),
+                          gradient: state.weatherInfo!.gradient,
+                          imageAsset: state.weatherInfo!.imageAsset,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -74,15 +85,18 @@ class _WeatherDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '$temperature°',
-          style: const TextStyle(
-            fontSize: 80,
-            height: 0.8,
-          ),
-          textHeightBehavior: const TextHeightBehavior(
-            applyHeightToFirstAscent: false,
+        FittedBox(
+          child: Text(
+            '$temperature°',
+            style: const TextStyle(
+              fontSize: 80,
+              height: 0.8,
+            ),
+            textHeightBehavior: const TextHeightBehavior(
+              applyHeightToFirstAscent: false,
+            ),
           ),
         ),
         Text(
@@ -112,30 +126,19 @@ class _WeatherIllustration extends StatelessWidget {
     return Stack(
       alignment: Alignment.centerRight,
       fit: StackFit.expand,
-      clipBehavior: Clip.none,
       children: [
-        ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(10),
-            bottomRight: Radius.circular(10),
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradient,
-                begin: Alignment.bottomRight,
-                end: Alignment.topLeft,
-              ),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: gradient,
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
             ),
           ),
         ),
-        Positioned(
-          left: 10,
-          right: 10,
-          child: imageAsset.image(
-            width: 140,
-            fit: BoxFit.contain,
-          ),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: imageAsset.image(),
         ),
       ],
     );

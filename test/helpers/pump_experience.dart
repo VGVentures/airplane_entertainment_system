@@ -5,6 +5,7 @@ import 'package:flight_information_repository/flight_information_repository.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:music_repository/music_repository.dart';
 import 'package:weather_repository/weather_repository.dart';
@@ -14,6 +15,8 @@ class MockWeatherRepository extends Mock implements WeatherRepository {}
 class MockMusicRepository extends Mock implements MusicRepository {}
 
 class MockAudioPlayer extends Mock implements AudioPlayer {}
+
+class _MockGoRouter extends Mock implements GoRouter {}
 
 class _MockFlightRepository extends Mock
     implements FlightInformationRepository {
@@ -57,7 +60,10 @@ extension PumpApp on WidgetTester {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: widget,
+            home: InheritedGoRouter(
+              goRouter: _MockGoRouter(),
+              child: widget,
+            ),
           ),
         ),
       ),

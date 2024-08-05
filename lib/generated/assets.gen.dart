@@ -36,13 +36,12 @@ class Assets {
   static const AssetGenImage music = AssetGenImage('assets/music.jpg');
   static const String spectrogram = 'assets/spectrogram.json';
   static const AssetGenImage spiderman = AssetGenImage('assets/spiderman.png');
-  static const AssetGenImage thunder = AssetGenImage('assets/thunder.png');
   static const AssetGenImage vgvLogo = AssetGenImage('assets/vgv_logo.png');
   static const $AssetsWeatherGen weather = $AssetsWeatherGen();
 
   /// List of all assets
   static List<dynamic> get values =>
-      [airplane, music, spectrogram, spiderman, thunder, vgvLogo];
+      [airplane, music, spectrogram, spiderman, vgvLogo];
 }
 
 class AssetGenImage {

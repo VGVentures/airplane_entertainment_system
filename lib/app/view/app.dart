@@ -1,5 +1,5 @@
 import 'package:aes_ui/aes_ui.dart';
-import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
+import 'package:airplane_entertainment_system/app_router/app_router.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flight_information_repository/flight_information_repository.dart';
@@ -14,16 +14,19 @@ class App extends StatelessWidget {
     required MusicRepository musicRepository,
     required AudioPlayer audioPlayer,
     required FlightInformationRepository flightInformationRepository,
+    required AppRouter appRouter,
     super.key,
   })  : _weatherRepository = weatherRepository,
         _musicRepository = musicRepository,
         _audioPlayer = audioPlayer,
-        _flightInformationRepository = flightInformationRepository;
+        _flightInformationRepository = flightInformationRepository,
+        _appRouter = appRouter;
 
   final WeatherRepository _weatherRepository;
   final MusicRepository _musicRepository;
   final AudioPlayer _audioPlayer;
   final FlightInformationRepository _flightInformationRepository;
+  final AppRouter _appRouter;
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +46,11 @@ class App extends StatelessWidget {
         ),
       ],
       child: AesLayout(
-        child: MaterialApp(
+        child: MaterialApp.router(
           theme: const AesTheme().themeData,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const AirplaneEntertainmentSystemScreen(),
+          routerConfig: _appRouter.routes,
         ),
       ),
     );

@@ -8,6 +8,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:music_repository/music_repository.dart';
 import 'package:weather_repository/weather_repository.dart';
@@ -17,6 +18,14 @@ import '../../helpers/helpers.dart';
 class _MockAudioCache extends Mock implements AudioCache {}
 
 class _MockAudioPlayer extends Mock implements AudioPlayer {}
+
+class _MockStatefulNavigationShell extends Mock
+    implements StatefulNavigationShell {
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return '';
+  }
+}
 
 class _MockWeatherBloc extends MockBloc<WeatherEvent, WeatherState>
     implements WeatherBloc {}
@@ -29,6 +38,7 @@ void main() {
     late WeatherRepository weatherRepository;
     late MusicRepository musicRepository;
     late AudioPlayer audioPlayer;
+    late StatefulNavigationShell navigationShell;
 
     setUp(() {
       weatherRepository = MockWeatherRepository();
@@ -48,12 +58,28 @@ void main() {
       final audioCache = _MockAudioCache();
       when(() => audioPlayer.audioCache).thenReturn(audioCache);
       when(() => audioPlayer.setVolume(any())).thenAnswer((_) async {});
+
+      navigationShell = _MockStatefulNavigationShell();
+
+      when(
+        () => navigationShell.goBranch(
+          any(),
+          initialLocation: any(named: 'initialLocation'),
+        ),
+      ).thenAnswer((_) => {});
+      when(() => navigationShell.currentIndex).thenReturn(0);
     });
 
     testWidgets('finds one AirplaneEntertainmentSystemView Widget',
         (tester) async {
       await tester.pumpApp(
-        const AirplaneEntertainmentSystemScreen(),
+        AirplaneEntertainmentSystemScreen(
+          navigationShell: navigationShell,
+          children: const [
+            OverviewPage(),
+            MusicPlayerPage(),
+          ],
+        ),
         layout: AesLayoutData.small,
         musicRepository: musicRepository,
         weatherRepository: weatherRepository,
@@ -65,10 +91,30 @@ void main() {
   });
 
   group('$AirplaneEntertainmentSystemView', () {
+    late StatefulNavigationShell navigationShell;
+
+    setUp(() {
+      navigationShell = _MockStatefulNavigationShell();
+
+      when(
+        () => navigationShell.goBranch(
+          any(),
+          initialLocation: any(named: 'initialLocation'),
+        ),
+      ).thenAnswer((_) => {});
+      when(() => navigationShell.currentIndex).thenReturn(0);
+    });
+
     testWidgets('shows $AesNavigationRail on large screens', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1600, 1200));
       await tester.pumpSubject(
-        const AirplaneEntertainmentSystemView(),
+        AirplaneEntertainmentSystemView(
+          navigationShell,
+          const [
+            OverviewPage(),
+            MusicPlayerPage(),
+          ],
+        ),
         AesLayoutData.large,
       );
 
@@ -78,7 +124,13 @@ void main() {
     testWidgets('shows $AesBottomNavigationBar on small screens',
         (tester) async {
       await tester.pumpSubject(
-        const AirplaneEntertainmentSystemView(),
+        AirplaneEntertainmentSystemView(
+          navigationShell,
+          const [
+            OverviewPage(),
+            MusicPlayerPage(),
+          ],
+        ),
         AesLayoutData.small,
       );
 
@@ -87,7 +139,13 @@ void main() {
 
     testWidgets('shows TopButtonBar', (tester) async {
       await tester.pumpSubject(
-        const AirplaneEntertainmentSystemView(),
+        AirplaneEntertainmentSystemView(
+          navigationShell,
+          const [
+            OverviewPage(),
+            MusicPlayerPage(),
+          ],
+        ),
         AesLayoutData.small,
       );
 
@@ -96,7 +154,13 @@ void main() {
 
     testWidgets('contains background', (tester) async {
       await tester.pumpSubject(
-        const AirplaneEntertainmentSystemView(),
+        AirplaneEntertainmentSystemView(
+          navigationShell,
+          const [
+            OverviewPage(),
+            MusicPlayerPage(),
+          ],
+        ),
         AesLayoutData.small,
       );
 
@@ -105,7 +169,13 @@ void main() {
 
     testWidgets('shows OverviewPage initially', (tester) async {
       await tester.pumpSubject(
-        const AirplaneEntertainmentSystemView(),
+        AirplaneEntertainmentSystemView(
+          navigationShell,
+          const [
+            OverviewPage(),
+            MusicPlayerPage(),
+          ],
+        ),
         AesLayoutData.small,
       );
 
@@ -114,13 +184,19 @@ void main() {
 
     testWidgets('shows MusicPlayerPage when icon is selected', (tester) async {
       await tester.pumpSubject(
-        const AirplaneEntertainmentSystemView(),
+        AirplaneEntertainmentSystemView(
+          navigationShell,
+          const [
+            OverviewPage(),
+            MusicPlayerPage(),
+          ],
+        ),
         AesLayoutData.small,
       );
 
       await tester.tap(find.byIcon(Icons.music_note));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 650));
+      await tester.pump(const Duration(milliseconds: 350));
 
       expect(find.byType(MusicPlayerPage), findsOneWidget);
     });
@@ -130,15 +206,21 @@ void main() {
           'shows $OverviewPage when icon is '
           'selected for $layout layout', (tester) async {
         await tester.pumpSubject(
-          const AirplaneEntertainmentSystemView(),
+          AirplaneEntertainmentSystemView(
+            navigationShell,
+            const [
+              OverviewPage(),
+              MusicPlayerPage(),
+            ],
+          ),
           layout,
         );
 
         await tester.tap(find.byIcon(Icons.music_note));
-        await tester.pump(const Duration(milliseconds: 600));
+        await tester.pump(const Duration(milliseconds: 300));
 
         await tester.tap(find.byIcon(Icons.airplanemode_active_outlined));
-        await tester.pump(const Duration(milliseconds: 600));
+        await tester.pump(const Duration(milliseconds: 300));
 
         expect(find.byType(OverviewPage), findsOneWidget);
       });

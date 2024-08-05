@@ -91,7 +91,7 @@ class _WeatherDetails extends StatelessWidget {
           child: Text(
             '$temperature°',
             style: const TextStyle(
-              fontSize: 80,
+              fontSize: 60,
               height: 0.8,
             ),
             textHeightBehavior: const TextHeightBehavior(
@@ -99,6 +99,7 @@ class _WeatherDetails extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 10),
         Text(
           label,
           style: const TextStyle(fontWeight: FontWeight.bold),

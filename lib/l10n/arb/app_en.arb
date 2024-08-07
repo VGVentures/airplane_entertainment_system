@@ -2,7 +2,6 @@
     "@@locale": "en",
     "goodVibes": "Good Vibes",
     "multipleArtists": "Multiple Artists",
-    "minutesShort": "mins",
     "remaining": "Remaining",
     "remainingTime": "{hours} h {minutes} min",
     "@remainingTime": {

@@ -157,6 +157,7 @@ class _MusicBottomSheet extends StatelessWidget {
                 builder: (context, track) {
                   if (track == null) return const SizedBox();
                   return Row(
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

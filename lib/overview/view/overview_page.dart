@@ -76,8 +76,6 @@ class DashBoard extends StatelessWidget {
         WeatherCard(),
         SizedBox(height: 20),
         MusicCard(),
-        SizedBox(height: 20),
-        MovieCard(),
       ],
     );
   }

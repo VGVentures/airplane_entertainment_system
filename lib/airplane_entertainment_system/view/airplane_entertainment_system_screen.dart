@@ -161,17 +161,36 @@ class _AnimatedBranchContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSmall = AesLayout.of(context) == AesLayoutData.small;
+    final axis = isSmall ? Axis.horizontal : Axis.vertical;
+
     return Stack(
       children: children.mapIndexed(
         (int index, Widget navigator) {
-          return AnimatedOpacity(
-            opacity: index == currentIndex ? 1 : 0,
-            duration: const Duration(milliseconds: 300),
-            child: IgnorePointer(
-              ignoring: index != currentIndex,
-              child: TickerMode(
-                enabled: index == currentIndex,
-                child: navigator,
+          return AnimatedSlide(
+            duration: const Duration(milliseconds: 600),
+            curve: index == currentIndex ? Curves.easeOut : Curves.easeInOut,
+            offset: Offset(
+              axis == Axis.horizontal
+                  ? index == currentIndex
+                      ? 0
+                      : 0.25
+                  : 0,
+              axis == Axis.vertical
+                  ? index == currentIndex
+                      ? 0
+                      : 0.25
+                  : 0,
+            ),
+            child: AnimatedOpacity(
+              opacity: index == currentIndex ? 1 : 0,
+              duration: const Duration(milliseconds: 300),
+              child: IgnorePointer(
+                ignoring: index != currentIndex,
+                child: TickerMode(
+                  enabled: index == currentIndex,
+                  child: navigator,
+                ),
               ),
             ),
           );

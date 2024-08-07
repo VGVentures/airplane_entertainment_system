@@ -35,27 +35,17 @@ class Assets {
   static const AssetGenImage airplane = AssetGenImage('assets/airplane.png');
   static const AssetGenImage music = AssetGenImage('assets/music.jpg');
   static const String spectrogram = 'assets/spectrogram.json';
-  static const AssetGenImage spiderman = AssetGenImage('assets/spiderman.png');
-  static const AssetGenImage thunder = AssetGenImage('assets/thunder.png');
   static const AssetGenImage vgvLogo = AssetGenImage('assets/vgv_logo.png');
   static const $AssetsWeatherGen weather = $AssetsWeatherGen();
 
   /// List of all assets
-  static List<dynamic> get values =>
-      [airplane, music, spectrogram, spiderman, thunder, vgvLogo];
+  static List<dynamic> get values => [airplane, music, spectrogram, vgvLogo];
 }
 
 class AssetGenImage {
-  const AssetGenImage(
-    this._assetName, {
-    this.size,
-    this.flavors = const {},
-  });
+  const AssetGenImage(this._assetName);
 
   final String _assetName;
-
-  final Size? size;
-  final Set<String> flavors;
 
   Image image({
     Key? key,

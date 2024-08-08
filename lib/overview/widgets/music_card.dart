@@ -11,43 +11,51 @@ class MusicCard extends StatelessWidget {
     final l10n = context.l10n;
 
     return SizedBox(
-      height: 200,
+      height: 150,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    l10n.goodVibes,
-                    style: AesTextStyles.titleLarge,
-                  ),
-                  Text(
-                    l10n.multipleArtists,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
+            Flexible(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      l10n.goodVibes,
+                      style: AesTextStyles.titleLarge,
                     ),
-                  ),
-                  const Icon(
-                    Icons.headphones,
-                    size: 32,
-                  ),
-                ],
+                    Text(
+                      l10n.multipleArtists,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.headphones,
+                      size: 32,
+                    ),
+                  ],
+                ),
               ),
             ),
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
-              child: Assets.music.image(
-                fit: BoxFit.fitHeight,
+            Flexible(
+              flex: 2,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                ),
+                child: Assets.music.image(
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ],

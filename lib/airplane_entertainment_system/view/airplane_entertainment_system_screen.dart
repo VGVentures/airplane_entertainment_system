@@ -2,13 +2,22 @@ import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/airplane_entertainment_system/airplane_entertainment_system.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:airplane_entertainment_system/music_player/music_player.dart';
-import 'package:airplane_entertainment_system/overview/overview.dart';
 import 'package:airplane_entertainment_system/weather/weather.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class AirplaneEntertainmentSystemScreen extends StatelessWidget {
-  const AirplaneEntertainmentSystemScreen({super.key});
+  const AirplaneEntertainmentSystemScreen({
+    required this.navigationShell,
+    required this.children,
+    super.key,
+  });
+
+  final StatefulNavigationShell navigationShell;
+
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
@@ -26,23 +35,24 @@ class AirplaneEntertainmentSystemScreen extends StatelessWidget {
           )..initialize(),
         ),
       ],
-      child: const AirplaneEntertainmentSystemView(),
+      child: AirplaneEntertainmentSystemView(
+        navigationShell,
+        children,
+      ),
     );
   }
 }
 
-class AirplaneEntertainmentSystemView extends StatefulWidget {
-  @visibleForTesting
-  const AirplaneEntertainmentSystemView({super.key});
+class AirplaneEntertainmentSystemView extends StatelessWidget {
+  const AirplaneEntertainmentSystemView(
+    this.navigationShell,
+    this.children, {
+    super.key,
+  });
 
-  @override
-  State<AirplaneEntertainmentSystemView> createState() =>
-      _AirplaneEntertainmentSystemViewState();
-}
+  final StatefulNavigationShell navigationShell;
 
-class _AirplaneEntertainmentSystemViewState
-    extends State<AirplaneEntertainmentSystemView> {
-  int _currentPage = 0;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +77,7 @@ class _AirplaneEntertainmentSystemViewState
             children: [
               Positioned.fill(
                 child: SystemBackground(
-                  page: _currentPage,
+                  page: navigationShell.currentIndex,
                 ),
               ),
               SafeArea(
@@ -80,20 +90,19 @@ class _AirplaneEntertainmentSystemViewState
                           if (layout != AesLayoutData.small)
                             AesNavigationRail(
                               destinations: destinations,
-                              selectedIndex: _currentPage,
-                              onDestinationSelected: (value) {
-                                setState(() {
-                                  _currentPage = value;
-                                });
+                              selectedIndex: navigationShell.currentIndex,
+                              onDestinationSelected: (index) {
+                                navigationShell.goBranch(
+                                  index,
+                                  initialLocation:
+                                      index == navigationShell.currentIndex,
+                                );
                               },
                             ),
                           Expanded(
-                            child: _ContentPageView(
-                              pageSize: Size(
-                                constraints.maxWidth,
-                                constraints.maxHeight,
-                              ),
-                              pageIndex: _currentPage,
+                            child: _AnimatedBranchContainer(
+                              currentIndex: navigationShell.currentIndex,
+                              children: children,
                             ),
                           ),
                         ],
@@ -110,7 +119,7 @@ class _AirplaneEntertainmentSystemViewState
                   child: IgnorePointer(
                     child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 600),
-                      opacity: _currentPage == 0 ? 0.8 : 0,
+                      opacity: navigationShell.currentIndex == 0 ? 0.8 : 0,
                       child: const WeatherClouds(
                         key: Key('foregroundClouds'),
                         count: 3,
@@ -127,11 +136,12 @@ class _AirplaneEntertainmentSystemViewState
       bottomNavigationBar: (layout == AesLayoutData.small)
           ? AesBottomNavigationBar(
               destinations: destinations,
-              selectedIndex: _currentPage,
-              onDestinationSelected: (value) {
-                setState(() {
-                  _currentPage = value;
-                });
+              selectedIndex: navigationShell.currentIndex,
+              onDestinationSelected: (index) {
+                navigationShell.goBranch(
+                  index,
+                  initialLocation: index == navigationShell.currentIndex,
+                );
               },
             )
           : null,
@@ -139,169 +149,53 @@ class _AirplaneEntertainmentSystemViewState
   }
 }
 
-class _ContentPageView extends StatefulWidget {
-  const _ContentPageView({
-    required this.pageSize,
-    required this.pageIndex,
+class _AnimatedBranchContainer extends StatelessWidget {
+  const _AnimatedBranchContainer({
+    required this.currentIndex,
+    required this.children,
   });
 
-  final Size pageSize;
-  final int pageIndex;
+  final int currentIndex;
 
-  @override
-  State<_ContentPageView> createState() => _ContentPageViewState();
-}
-
-class _ContentPageViewState extends State<_ContentPageView>
-    with SingleTickerProviderStateMixin {
-  static const _pages = [
-    OverviewPage(key: Key('overviewPage')),
-    MusicPlayerPage(key: Key('musicPlayerPage')),
-  ];
-
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    value: 1,
-    duration: const Duration(milliseconds: 600),
-  );
-  late int _previousPage;
-  late int _currentPage;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _previousPage = widget.pageIndex;
-    _currentPage = widget.pageIndex;
-
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        setState(() {
-          _previousPage = _currentPage;
-        });
-      }
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant _ContentPageView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.pageIndex != oldWidget.pageIndex) {
-      setState(() {
-        _previousPage = oldWidget.pageIndex;
-        _currentPage = widget.pageIndex;
-      });
-      _controller.forward(from: 0);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-
-    super.dispose();
-  }
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
     final isSmall = AesLayout.of(context) == AesLayoutData.small;
-    final pageSize = widget.pageSize;
-    final pageSide = isSmall ? pageSize.width : pageSize.height;
-    final pageOffset = pageSide / 4;
     final axis = isSmall ? Axis.horizontal : Axis.vertical;
 
     return Stack(
-      children: [
-        if (_previousPage != _currentPage)
-          _PositionedFadeTransition(
-            axis: axis,
-            positionAnimation: _controller.drive(
-              CurveTween(
-                curve: Curves.easeInOut,
-              ),
+      children: children.mapIndexed(
+        (int index, Widget navigator) {
+          return AnimatedSlide(
+            duration: const Duration(milliseconds: 600),
+            curve: index == currentIndex ? Curves.easeOut : Curves.easeInOut,
+            offset: Offset(
+              axis == Axis.horizontal
+                  ? index == currentIndex
+                      ? 0
+                      : 0.25
+                  : 0,
+              axis == Axis.vertical
+                  ? index == currentIndex
+                      ? 0
+                      : 0.25
+                  : 0,
             ),
-            opacityAnimation: _controller.drive(
-              Tween<double>(begin: 1, end: 0).chain(
-                CurveTween(
-                  curve: const Interval(
-                    0,
-                    0.5,
-                    curve: Curves.easeOut,
-                  ),
+            child: AnimatedOpacity(
+              opacity: index == currentIndex ? 1 : 0,
+              duration: const Duration(milliseconds: 300),
+              child: IgnorePointer(
+                ignoring: index != currentIndex,
+                child: TickerMode(
+                  enabled: index == currentIndex,
+                  child: navigator,
                 ),
               ),
             ),
-            pageSize: widget.pageSize,
-            endOffset: _currentPage > _previousPage ? -pageOffset : pageOffset,
-            child: _pages[_previousPage],
-          ),
-        _PositionedFadeTransition(
-          axis: axis,
-          positionAnimation: _controller.drive(
-            CurveTween(
-              curve: Curves.easeInOut,
-            ),
-          ),
-          opacityAnimation: _controller.drive(
-            CurveTween(
-              curve: const Interval(
-                0.5,
-                1,
-                curve: Curves.easeIn,
-              ),
-            ),
-          ),
-          pageSize: widget.pageSize,
-          beginOffset: _currentPage > _previousPage ? pageOffset : -pageOffset,
-          child: _pages[_currentPage],
-        ),
-      ],
-    );
-  }
-}
-
-class _PositionedFadeTransition extends StatelessWidget {
-  const _PositionedFadeTransition({
-    required this.positionAnimation,
-    required this.opacityAnimation,
-    required this.pageSize,
-    required this.child,
-    required this.axis,
-    this.beginOffset = 0,
-    this.endOffset = 0,
-  });
-
-  final Animation<double> positionAnimation;
-  final Animation<double> opacityAnimation;
-  final Size pageSize;
-  final Widget child;
-  final double beginOffset;
-  final double endOffset;
-  final Axis axis;
-
-  @override
-  Widget build(BuildContext context) {
-    final begin = axis == Axis.horizontal
-        ? RelativeRect.fromLTRB(beginOffset, 0, -beginOffset, 0)
-        : RelativeRect.fromLTRB(0, beginOffset, 0, -beginOffset);
-
-    final end = axis == Axis.horizontal
-        ? RelativeRect.fromLTRB(endOffset, 0, -endOffset, 0)
-        : RelativeRect.fromLTRB(0, endOffset, 0, -endOffset);
-
-    return PositionedTransition(
-      rect: positionAnimation.drive(
-        RelativeRectTween(begin: begin, end: end),
-      ),
-      child: FadeTransition(
-        key: ValueKey<Key?>(child.key),
-        opacity: opacityAnimation,
-        child: SizedBox.fromSize(
-          size: pageSize,
-          child: child,
-        ),
-      ),
+          );
+        },
+      ).toList(),
     );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:airplane_entertainment_system/app/app.dart';
+import 'package:airplane_entertainment_system/app_router/app_router.dart';
 import 'package:airplane_entertainment_system/bootstrap.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flight_api_client/flight_api_client.dart';
 import 'package:flight_information_repository/flight_information_repository.dart';
+import 'package:flutter/material.dart';
 import 'package:music_repository/music_repository.dart';
 import 'package:weather_api_client/weather_api_client.dart';
 import 'package:weather_repository/weather_repository.dart';
@@ -14,12 +16,16 @@ void main() {
     final audioPlayer = AudioPlayer();
     final flightInformationRepository =
         FlightInformationRepository(FlightApiClient());
+    final appRouter = AppRouter(
+      navigatorKey: GlobalKey<NavigatorState>(),
+    );
 
     return App(
       weatherRepository: weatherRepository,
       musicRepository: musicRepository,
       audioPlayer: audioPlayer,
       flightInformationRepository: flightInformationRepository,
+      appRouter: appRouter,
     );
   });
 }

@@ -37,7 +37,7 @@ dev_dependencies:
   flutter_gen_runner: ^5.6.0
   flutter_test:
     sdk: flutter
-  go_router_builder: ^2.7.0
+  go_router_builder: ^2.7.1
   mocktail: ^1.0.4
   very_good_analysis: ^6.0.0
 

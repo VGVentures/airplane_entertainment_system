@@ -9,7 +9,7 @@ environment:
 dependencies:
   aes_ui:
     path: packages/aes_ui
-  audioplayers: ^6.0.0
+  audioplayers: ^6.1.0
   bloc: ^8.1.4
   collection: ^1.18.0
   equatable: ^2.0.5

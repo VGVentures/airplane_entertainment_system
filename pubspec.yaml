@@ -11,7 +11,7 @@ dependencies:
     path: packages/aes_ui
   audioplayers: ^6.1.0
   bloc: ^8.1.4
-  collection: ^1.18.0
+  collection: ^1.19.0
   equatable: ^2.0.5
   flight_api_client:
     path: packages/flight_api_client

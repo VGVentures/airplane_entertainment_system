@@ -56,7 +56,7 @@ class OverviewPageBranchData extends StatefulShellBranchData {
 }
 
 @immutable
-class OverviewPageRouteData extends GoRouteData {
+class OverviewPageRouteData extends GoRouteData with $OverviewPageRouteData {
   const OverviewPageRouteData();
 
   @override
@@ -70,7 +70,8 @@ class MusicPageBranchData extends StatefulShellBranchData {
 }
 
 @immutable
-class MusicPlayerPageRouteData extends GoRouteData {
+class MusicPlayerPageRouteData extends GoRouteData
+    with $MusicPlayerPageRouteData {
   const MusicPlayerPageRouteData();
 
   @override

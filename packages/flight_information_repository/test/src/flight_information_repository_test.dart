@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors
 import 'dart:async';
 
 import 'package:flight_api_client/flight_api_client.dart';
@@ -32,8 +31,8 @@ void main() {
 
         controller.add(
           FlightInformation(
-            departureAirport: Airport(city: 'New York City', code: 'JFK'),
-            arrivalAirport: Airport(city: 'Nashville', code: 'BNA'),
+            departureAirport: const Airport(city: 'New York City', code: 'JFK'),
+            arrivalAirport: const Airport(city: 'Nashville', code: 'BNA'),
             departureTime: DateTime(2024),
             arrivalTime: DateTime(2024),
             timestamp: DateTime(2024, 7, 30),

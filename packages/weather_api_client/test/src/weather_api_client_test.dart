@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors
 import 'dart:math';
 
 import 'package:fake_async/fake_async.dart';
@@ -22,11 +21,11 @@ void main() {
 
           client.weatherInformation.listen(updates.add);
 
-          async.elapse(Duration(seconds: 90));
+          async.elapse(const Duration(seconds: 90));
 
           expect(updates.length, equals(2));
 
-          async.elapse(Duration(seconds: 90));
+          async.elapse(const Duration(seconds: 90));
 
           expect(updates.length, equals(3));
         });

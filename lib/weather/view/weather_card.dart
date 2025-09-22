@@ -1,4 +1,5 @@
 import 'package:airplane_entertainment_system/generated/assets.gen.dart';
+import 'package:airplane_entertainment_system/l10n/arb/app_localizations.dart';
 import 'package:airplane_entertainment_system/l10n/l10n.dart';
 import 'package:airplane_entertainment_system/weather/weather.dart';
 import 'package:flutter/material.dart';

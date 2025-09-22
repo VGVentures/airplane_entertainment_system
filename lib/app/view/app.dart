@@ -1,6 +1,6 @@
 import 'package:aes_ui/aes_ui.dart';
 import 'package:airplane_entertainment_system/app_router/app_router.dart';
-import 'package:airplane_entertainment_system/l10n/l10n.dart';
+import 'package:airplane_entertainment_system/l10n/arb/app_localizations.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flight_information_repository/flight_information_repository.dart';
 import 'package:flutter/material.dart';

@@ -197,7 +197,7 @@ class CloudGenerator {
   final Random random;
   final Color color;
 
-  static const _maxRelativeRadius = 1 / 4;
+  static const double _maxRelativeRadius = 1 / 4;
 
   Future<List<Cloud>> generate(int count, double averageScale) async {
     final sizes = List.generate(

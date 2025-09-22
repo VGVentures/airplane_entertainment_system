@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -49,16 +50,16 @@ class MusicVisualizerState extends State<MusicVisualizer>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    _loadSpectrogram();
+    unawaited(_loadSpectrogram());
   }
 
   @override
   void didUpdateWidget(covariant MusicVisualizer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive) {
-      extensionController.forward();
+      unawaited(extensionController.forward());
     } else {
-      extensionController.reverse();
+      unawaited(extensionController.reverse());
     }
   }
 
@@ -85,7 +86,7 @@ class MusicVisualizerState extends State<MusicVisualizer>
     ];
     await animationController.forward();
 
-    animationController.addStatusListener((status) {
+    animationController.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
         setState(() {
           final oldSpectrogramIndex = spectrogramIndex;
@@ -104,7 +105,7 @@ class MusicVisualizerState extends State<MusicVisualizer>
               ),
           ];
         });
-        animationController.forward(from: 0);
+        await animationController.forward(from: 0);
       }
     });
 

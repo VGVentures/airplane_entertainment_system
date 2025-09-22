@@ -19,7 +19,7 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     _progressSubscription =
         _player.onPositionChanged.listen(_onProgressChanged);
 
-    _player.setVolume(1);
+    unawaited(_player.setVolume(1));
   }
 
   final MusicRepository _musicRepository;
@@ -53,7 +53,7 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     if (track == state.currentTrack) {
       return togglePlayPause();
     }
-    _loadAndPlayTrack(track);
+    unawaited(_loadAndPlayTrack(track));
   }
 
   Future<void> _loadAndPlayTrack(MusicTrack track) async {
@@ -72,16 +72,16 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
       playTrack(state.tracks.first);
     }
     if (state.isPlaying) {
-      _player.pause();
+      unawaited(_player.pause());
     } else {
-      _player.resume();
+      unawaited(_player.resume());
     }
   }
 
   void seek(double progress) {
     final duration = state.duration;
     if (duration != null) {
-      _player.seek(duration * progress);
+      unawaited(_player.seek(duration * progress));
     }
   }
 
@@ -91,7 +91,7 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
 
     final nextTrackIndex = _nextTrackIndex();
     final nextTrack = state.tracks[nextTrackIndex];
-    _loadAndPlayTrack(nextTrack);
+    unawaited(_loadAndPlayTrack(nextTrack));
 
     emit(state.copyWith(currentTrackIndex: nextTrackIndex));
   }
@@ -117,7 +117,7 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
 
     final previousTrackIndex = _previousTrackIndex();
     final previousTrack = state.tracks[previousTrackIndex];
-    _loadAndPlayTrack(previousTrack);
+    unawaited(_loadAndPlayTrack(previousTrack));
 
     emit(state.copyWith(currentTrackIndex: previousTrackIndex));
   }
@@ -143,7 +143,7 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
   void toggleLoop() {
     final isLoop = !state.isLoop;
     final releaseMode = isLoop ? ReleaseMode.loop : ReleaseMode.release;
-    _player.setReleaseMode(releaseMode);
+    unawaited(_player.setReleaseMode(releaseMode));
     emit(state.copyWith(isLoop: isLoop));
   }
 
@@ -159,15 +159,15 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
 
   void toggleMute() {
     final mute = !state.mute;
-    _player.setVolume(mute ? 0 : 1);
+    unawaited(_player.setVolume(mute ? 0 : 1));
     emit(state.copyWith(mute: mute));
   }
 
   @override
-  Future<void> close() {
-    _isPlayingSubscription.cancel();
-    _progressSubscription.cancel();
-    _player.release();
+  Future<void> close() async {
+    await _isPlayingSubscription.cancel();
+    await _progressSubscription.cancel();
+    await _player.release();
     return super.close();
   }
 }

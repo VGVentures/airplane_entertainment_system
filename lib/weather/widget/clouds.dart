@@ -67,21 +67,22 @@ class _CloudBackgroundState extends State<Clouds>
       vsync: this,
       value: 0.5,
       duration: Duration(seconds: 20 ~/ widget.averageVelocity),
-    )..repeat();
+    );
+    unawaited(_animationController.repeat());
 
     _styleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
 
-    _renderClouds();
+    unawaited(_renderClouds());
   }
 
   @override
   void didUpdateWidget(Clouds oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.style != widget.style) {
-      _switchStyle();
+      unawaited(_switchStyle());
     }
   }
 

@@ -1,3 +1,4 @@
+// Lint ignored to don't force const constructor in comparison
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flight_api_client/flight_api_client.dart';

@@ -165,7 +165,7 @@ class _MusicVisualizerPainter extends CustomPainter {
       _smoothCurve(path, r0, angle0, r1, angle1, canvas);
       _smoothCurve(path, r1, angle1, r2, angle2, canvas);
     }
-    canvas.drawPath(path, Paint()..color = Colors.blue.withOpacity(0.5));
+    canvas.drawPath(path, Paint()..color = Colors.blue.withValues(alpha: 0.5));
   }
 
   void _smoothCurve(

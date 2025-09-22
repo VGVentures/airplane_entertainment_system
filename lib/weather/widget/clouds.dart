@@ -246,8 +246,8 @@ class CloudGenerator {
     final opacity = 0.05 + random.nextDouble() / 10;
     final gradient = RadialGradient(
       colors: [
-        color.withOpacity(opacity),
-        color.withOpacity(0),
+        color.withValues(alpha: opacity),
+        color.withValues(alpha: 0),
       ],
       stops: const [0.6, 1],
     );

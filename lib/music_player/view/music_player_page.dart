@@ -98,7 +98,7 @@ class MusicFloatingButton extends StatelessWidget {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
+                  color: Colors.grey.withValues(alpha: 0.5),
                   spreadRadius: 5,
                   blurRadius: 7,
                   offset: const Offset(0, 3),
@@ -123,7 +123,7 @@ class MusicFloatingButton extends StatelessWidget {
                 child: Icon(
                   Icons.play_circle,
                   size: 32,
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                 ),
               ),
             ),
@@ -232,7 +232,7 @@ class MusicPlayerView extends StatelessWidget {
                                 color: Colors.white,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
+                                    color: Colors.grey.withValues(alpha: 0.5),
                                     spreadRadius: 5,
                                     blurRadius: 7,
                                     offset: const Offset(0, 3),
@@ -247,7 +247,7 @@ class MusicPlayerView extends StatelessWidget {
                             child: DecoratedBox(
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.black.withOpacity(0.5),
+                                color: Colors.black.withValues(alpha: 0.5),
                               ),
                               child: Center(
                                 child: InkWell(
@@ -370,7 +370,7 @@ class MusicMenuView extends StatelessWidget {
         colors: [
           Colors.white,
           Colors.white,
-          Colors.white.withOpacity(0),
+          Colors.white.withValues(alpha: 0),
         ],
         stops: const [0, 0.9, 0.99],
       ).createShader(bounds),

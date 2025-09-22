@@ -219,8 +219,8 @@ class _ExhaustPainter extends CustomPainter {
 
     final gradient = LinearGradient(
       colors: [
-        Colors.white.withOpacity(0.6),
-        Colors.white.withOpacity(0),
+        Colors.white.withValues(alpha: 0.6),
+        Colors.white.withValues(alpha: 0),
       ],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,

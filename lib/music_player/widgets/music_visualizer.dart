@@ -83,30 +83,30 @@ class MusicVisualizerState extends State<MusicVisualizer>
       for (final frequency in spectrogram[spectrogramIndex])
         ConstantTween<double>(frequency),
     ];
-    animationController
-      ..forward()
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          setState(() {
-            final oldSpectrogramIndex = spectrogramIndex;
+    await animationController.forward();
 
-            spectrogramIndex += 1;
+    animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          final oldSpectrogramIndex = spectrogramIndex;
 
-            if (spectrogramIndex >= spectrogram.length) {
-              spectrogramIndex = 0;
-            }
+          spectrogramIndex += 1;
 
-            frequencyTweens = [
-              for (var i = 0; i < frequencyTweens.length; i++)
-                Tween<double>(
-                  begin: spectrogram[oldSpectrogramIndex][i],
-                  end: spectrogram[spectrogramIndex][i],
-                ),
-            ];
-          });
-          animationController.forward(from: 0);
-        }
-      });
+          if (spectrogramIndex >= spectrogram.length) {
+            spectrogramIndex = 0;
+          }
+
+          frequencyTweens = [
+            for (var i = 0; i < frequencyTweens.length; i++)
+              Tween<double>(
+                begin: spectrogram[oldSpectrogramIndex][i],
+                end: spectrogram[spectrogramIndex][i],
+              ),
+          ];
+        });
+        animationController.forward(from: 0);
+      }
+    });
 
     setState(() {
       ready = true;

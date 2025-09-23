@@ -1,3 +1,5 @@
+// dart format off
+// coverage:ignore-file
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -17,7 +19,7 @@ import 'app_localizations_en.dart';
 /// `supportedLocales` list. For example:
 ///
 /// ```dart
-/// import 'arb/app_localizations.dart';
+/// import 'gen/app_localizations.dart';
 ///
 /// return MaterialApp(
 ///   localizationsDelegates: AppLocalizations.localizationsDelegates,

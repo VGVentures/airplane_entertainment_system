@@ -84,9 +84,9 @@ class MusicVisualizerState extends State<MusicVisualizer>
       for (final frequency in spectrogram[spectrogramIndex])
         ConstantTween<double>(frequency),
     ];
-    await animationController.forward();
+    unawaited(animationController.forward());
 
-    animationController.addStatusListener((status) async {
+    animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setState(() {
           final oldSpectrogramIndex = spectrogramIndex;
@@ -105,7 +105,7 @@ class MusicVisualizerState extends State<MusicVisualizer>
               ),
           ];
         });
-        await animationController.forward(from: 0);
+        unawaited(animationController.forward(from: 0));
       }
     });
 

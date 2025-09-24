@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -49,16 +50,16 @@ class MusicVisualizerState extends State<MusicVisualizer>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    _loadSpectrogram();
+    unawaited(_loadSpectrogram());
   }
 
   @override
   void didUpdateWidget(covariant MusicVisualizer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive) {
-      extensionController.forward();
+      unawaited(extensionController.forward());
     } else {
-      extensionController.reverse();
+      unawaited(extensionController.reverse());
     }
   }
 
@@ -83,30 +84,30 @@ class MusicVisualizerState extends State<MusicVisualizer>
       for (final frequency in spectrogram[spectrogramIndex])
         ConstantTween<double>(frequency),
     ];
-    animationController
-      ..forward()
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          setState(() {
-            final oldSpectrogramIndex = spectrogramIndex;
+    unawaited(animationController.forward());
 
-            spectrogramIndex += 1;
+    animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          final oldSpectrogramIndex = spectrogramIndex;
 
-            if (spectrogramIndex >= spectrogram.length) {
-              spectrogramIndex = 0;
-            }
+          spectrogramIndex += 1;
 
-            frequencyTweens = [
-              for (var i = 0; i < frequencyTweens.length; i++)
-                Tween<double>(
-                  begin: spectrogram[oldSpectrogramIndex][i],
-                  end: spectrogram[spectrogramIndex][i],
-                ),
-            ];
-          });
-          animationController.forward(from: 0);
-        }
-      });
+          if (spectrogramIndex >= spectrogram.length) {
+            spectrogramIndex = 0;
+          }
+
+          frequencyTweens = [
+            for (var i = 0; i < frequencyTweens.length; i++)
+              Tween<double>(
+                begin: spectrogram[oldSpectrogramIndex][i],
+                end: spectrogram[spectrogramIndex][i],
+              ),
+          ];
+        });
+        unawaited(animationController.forward(from: 0));
+      }
+    });
 
     setState(() {
       ready = true;
@@ -165,7 +166,7 @@ class _MusicVisualizerPainter extends CustomPainter {
       _smoothCurve(path, r0, angle0, r1, angle1, canvas);
       _smoothCurve(path, r1, angle1, r2, angle2, canvas);
     }
-    canvas.drawPath(path, Paint()..color = Colors.blue.withOpacity(0.5));
+    canvas.drawPath(path, Paint()..color = Colors.blue.withValues(alpha: 0.5));
   }
 
   void _smoothCurve(

@@ -67,21 +67,22 @@ class _CloudBackgroundState extends State<Clouds>
       vsync: this,
       value: 0.5,
       duration: Duration(seconds: 20 ~/ widget.averageVelocity),
-    )..repeat();
+    );
+    unawaited(_animationController.repeat());
 
     _styleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
 
-    _renderClouds();
+    unawaited(_renderClouds());
   }
 
   @override
   void didUpdateWidget(Clouds oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.style != widget.style) {
-      _switchStyle();
+      unawaited(_switchStyle());
     }
   }
 
@@ -197,7 +198,7 @@ class CloudGenerator {
   final Random random;
   final Color color;
 
-  static const _maxRelativeRadius = 1 / 4;
+  static const double _maxRelativeRadius = 1 / 4;
 
   Future<List<Cloud>> generate(int count, double averageScale) async {
     final sizes = List.generate(
@@ -246,8 +247,8 @@ class CloudGenerator {
     final opacity = 0.05 + random.nextDouble() / 10;
     final gradient = RadialGradient(
       colors: [
-        color.withOpacity(opacity),
-        color.withOpacity(0),
+        color.withValues(alpha: opacity),
+        color.withValues(alpha: 0),
       ],
       stops: const [0.6, 1],
     );

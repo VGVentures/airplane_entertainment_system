@@ -42,7 +42,7 @@ class _ExhaustStream extends StatefulWidget {
 
 class _ExhaustStreamState extends State<_ExhaustStream>
     with SingleTickerProviderStateMixin {
-  final xOffsets = _ExhaustPainter.generateXOffsets();
+  final List<_ExhaustXOffset> xOffsets = _ExhaustPainter.generateXOffsets();
   late final _animationController = AnimationController(
     vsync: this,
     upperBound: xOffsets.length.toDouble(),
@@ -219,8 +219,8 @@ class _ExhaustPainter extends CustomPainter {
 
     final gradient = LinearGradient(
       colors: [
-        Colors.white.withOpacity(0.6),
-        Colors.white.withOpacity(0),
+        Colors.white.withValues(alpha: 0.6),
+        Colors.white.withValues(alpha: 0),
       ],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,

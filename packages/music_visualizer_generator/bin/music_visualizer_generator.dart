@@ -48,15 +48,6 @@ Uint64List linSpace(int end, int steps) {
   return a;
 }
 
-String gradient(double power) {
-  const scale = 2;
-  const levels = [' ', '░', '▒', '▓', '█'];
-  var index = math.log((power * levels.length) * scale).floor();
-  if (index < 0) index = 0;
-  if (index >= levels.length) index = levels.length - 1;
-  return levels[index];
-}
-
 double scaled(double power) {
   return math.log(power);
 }

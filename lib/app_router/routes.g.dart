@@ -19,7 +19,7 @@ RouteBase get $homeScreenRouteData => StatefulShellRouteData.$route(
             GoRouteData.$route(
               path: '/overview',
               name: 'overview',
-              factory: $OverviewPageRouteDataExtension._fromState,
+              factory: $OverviewPageRouteData._fromState,
             ),
           ],
         ),
@@ -28,7 +28,7 @@ RouteBase get $homeScreenRouteData => StatefulShellRouteData.$route(
             GoRouteData.$route(
               path: '/music',
               name: 'music',
-              factory: $MusicPlayerPageRouteDataExtension._fromState,
+              factory: $MusicPlayerPageRouteData._fromState,
             ),
           ],
         ),
@@ -40,38 +40,48 @@ extension $HomeScreenRouteDataExtension on HomeScreenRouteData {
       const HomeScreenRouteData();
 }
 
-extension $OverviewPageRouteDataExtension on OverviewPageRouteData {
+mixin $OverviewPageRouteData on GoRouteData {
   static OverviewPageRouteData _fromState(GoRouterState state) =>
       const OverviewPageRouteData();
 
+  @override
   String get location => GoRouteData.$location(
         '/overview',
       );
 
+  @override
   void go(BuildContext context) => context.go(location);
 
+  @override
   Future<T?> push<T>(BuildContext context) => context.push<T>(location);
 
+  @override
   void pushReplacement(BuildContext context) =>
       context.pushReplacement(location);
 
+  @override
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $MusicPlayerPageRouteDataExtension on MusicPlayerPageRouteData {
+mixin $MusicPlayerPageRouteData on GoRouteData {
   static MusicPlayerPageRouteData _fromState(GoRouterState state) =>
       const MusicPlayerPageRouteData();
 
+  @override
   String get location => GoRouteData.$location(
         '/music',
       );
 
+  @override
   void go(BuildContext context) => context.go(location);
 
+  @override
   Future<T?> push<T>(BuildContext context) => context.push<T>(location);
 
+  @override
   void pushReplacement(BuildContext context) =>
       context.pushReplacement(location);
 
+  @override
   void replace(BuildContext context) => context.replace(location);
 }

@@ -45,8 +45,8 @@ class WeatherApiClient {
   Stream<WeatherInformation> get weatherInformation {
     _controller.add(nextWeatherInformation());
 
-    _timer ??= Timer.periodic(_updateInterval, (timer) {
-      Future<void>.delayed(_randomInterval).then(
+    _timer ??= Timer.periodic(_updateInterval, (timer) async {
+      await Future<void>.delayed(_randomInterval).then(
         (_) => _controller.add(nextWeatherInformation()),
       );
     });

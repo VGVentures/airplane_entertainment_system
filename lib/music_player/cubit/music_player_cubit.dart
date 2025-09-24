@@ -27,9 +27,9 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
   late final StreamSubscription<Duration> _progressSubscription;
   final AudioPlayer _player;
 
-  void _onIsPlayingChanged(PlayerState playerState) {
+  Future<void> _onIsPlayingChanged(PlayerState playerState) async {
     if (playerState == PlayerState.completed) {
-      if (!state.isLoop) next();
+      if (!state.isLoop) await next();
     } else {
       emit(state.copyWith(isPlaying: playerState == PlayerState.playing));
     }
@@ -49,11 +49,11 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     emit(state.copyWith(tracks: tracks));
   }
 
-  void playTrack(MusicTrack track) {
+  Future<void> playTrack(MusicTrack track) async {
     if (track == state.currentTrack) {
       return togglePlayPause();
     }
-    unawaited(_loadAndPlayTrack(track));
+    await _loadAndPlayTrack(track);
   }
 
   Future<void> _loadAndPlayTrack(MusicTrack track) async {
@@ -67,31 +67,31 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     );
   }
 
-  void togglePlayPause() {
+  Future<void> togglePlayPause() async {
     if (state.currentTrack == null) {
-      playTrack(state.tracks.first);
+      await playTrack(state.tracks.first);
     }
     if (state.isPlaying) {
-      unawaited(_player.pause());
+      await _player.pause();
     } else {
-      unawaited(_player.resume());
+      await _player.resume();
     }
   }
 
-  void seek(double progress) {
+  Future<void> seek(double progress) async {
     final duration = state.duration;
     if (duration != null) {
-      unawaited(_player.seek(duration * progress));
+      await _player.seek(duration * progress);
     }
   }
 
-  void next() {
+  Future<void> next() async {
     final currentTrackIndex = state.currentTrackIndex;
     if (currentTrackIndex == null) return;
 
     final nextTrackIndex = _nextTrackIndex();
     final nextTrack = state.tracks[nextTrackIndex];
-    unawaited(_loadAndPlayTrack(nextTrack));
+    await _loadAndPlayTrack(nextTrack);
 
     emit(state.copyWith(currentTrackIndex: nextTrackIndex));
   }
@@ -111,13 +111,13 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     }
   }
 
-  void previous() {
+  Future<void> previous() async {
     final currentTrackIndex = state.currentTrackIndex;
     if (currentTrackIndex == null) return;
 
     final previousTrackIndex = _previousTrackIndex();
     final previousTrack = state.tracks[previousTrackIndex];
-    unawaited(_loadAndPlayTrack(previousTrack));
+    await _loadAndPlayTrack(previousTrack);
 
     emit(state.copyWith(currentTrackIndex: previousTrackIndex));
   }
@@ -140,10 +140,10 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     }
   }
 
-  void toggleLoop() {
+  Future<void> toggleLoop() async {
     final isLoop = !state.isLoop;
     final releaseMode = isLoop ? ReleaseMode.loop : ReleaseMode.release;
-    unawaited(_player.setReleaseMode(releaseMode));
+    await _player.setReleaseMode(releaseMode);
     emit(state.copyWith(isLoop: isLoop));
   }
 
@@ -157,9 +157,9 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     }
   }
 
-  void toggleMute() {
+  Future<void> toggleMute() async {
     final mute = !state.mute;
-    unawaited(_player.setVolume(mute ? 0 : 1));
+    await _player.setVolume(mute ? 0 : 1);
     emit(state.copyWith(mute: mute));
   }
 

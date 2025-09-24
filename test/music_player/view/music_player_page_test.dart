@@ -90,6 +90,8 @@ void main() {
     testWidgets(
       'calls [MusicPlayerCubit.previous] when previous track button is pressed',
       (tester) async {
+        when(() => cubit.previous()).thenAnswer((_) async {});
+
         await tester.pumpApp(subject());
 
         await tester.tap(find.byIcon(Icons.first_page_rounded));
@@ -100,6 +102,8 @@ void main() {
     testWidgets(
       'calls [MusicPlayerCubit.next] when next track button is pressed',
       (tester) async {
+        when(() => cubit.next()).thenAnswer((_) async {});
+
         await tester.pumpApp(subject());
 
         await tester.tap(find.byIcon(Icons.last_page_rounded));
@@ -110,6 +114,8 @@ void main() {
     testWidgets(
       'calls [MusicPlayerCubit.togglePlayPause] when play button is pressed',
       (tester) async {
+        when(() => cubit.togglePlayPause()).thenAnswer((_) async {});
+
         await tester.pumpApp(subject());
 
         await tester.tap(find.byIcon(Icons.play_arrow));
@@ -120,6 +126,8 @@ void main() {
     testWidgets(
       'calls [MusicPlayerCubit.seek] when slider is moved',
       (tester) async {
+        when(() => cubit.seek(any())).thenAnswer((_) async {});
+
         await tester.pumpApp(subject());
 
         await tester.drag(find.byType(Slider), const Offset(10, 0));
@@ -130,6 +138,8 @@ void main() {
     testWidgets(
       'calls [MusicPlayerCubit.toggleLoop] when repeat button is pressed',
       (tester) async {
+        when(() => cubit.toggleLoop()).thenAnswer((_) async {});
+
         await tester.pumpApp(subject());
 
         await tester.tap(find.byIcon(Icons.repeat_rounded));
@@ -168,6 +178,8 @@ void main() {
     testWidgets(
       'calls [MusicPlayerCubit.playTrack] when track is selected',
       (tester) async {
+        when(() => cubit.playTrack(tracks[0])).thenAnswer((_) async {});
+
         await tester.pumpApp(subject());
 
         await tester.tap(find.text('Title0'));

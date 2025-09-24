@@ -34,7 +34,7 @@ void main() {
 
     testWidgets('toggles mute when pressed', (tester) async {
       final MusicPlayerCubit cubit = _MockMusicPlayerCubit();
-
+      when(cubit.toggleMute).thenAnswer((_) async {});
       whenListen(
         cubit,
         Stream.fromIterable(

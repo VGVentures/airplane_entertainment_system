@@ -26,6 +26,7 @@ extension on WidgetTester {
   Future<void> pumpSubject() {
     final MusicPlayerCubit musicPlayerCubit = _MockMusicPlayerCubit();
     when(() => musicPlayerCubit.state).thenReturn(const MusicPlayerState());
+    when(musicPlayerCubit.toggleMute).thenAnswer((_) async {});
 
     return pumpApp(
       BlocProvider.value(

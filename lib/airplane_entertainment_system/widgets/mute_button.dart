@@ -10,8 +10,8 @@ class MuteButton extends StatelessWidget {
     final mute = context.select((MusicPlayerCubit cubit) => cubit.state.mute);
 
     return IconButton(
-      onPressed: () {
-        context.read<MusicPlayerCubit>().toggleMute();
+      onPressed: () async {
+        await context.read<MusicPlayerCubit>().toggleMute();
       },
       icon: Icon(mute ? Icons.volume_off : Icons.volume_up),
     );

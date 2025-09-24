@@ -49,11 +49,11 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     emit(state.copyWith(tracks: tracks));
   }
 
-  void playTrack(MusicTrack track) {
+  Future<void> playTrack(MusicTrack track) async {
     if (track == state.currentTrack) {
       return togglePlayPause();
     }
-    unawaited(_loadAndPlayTrack(track));
+    await _loadAndPlayTrack(track);
   }
 
   Future<void> _loadAndPlayTrack(MusicTrack track) async {
@@ -67,9 +67,9 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     );
   }
 
-  void togglePlayPause() {
+  Future<void> togglePlayPause() async {
     if (state.currentTrack == null) {
-      playTrack(state.tracks.first);
+      await playTrack(state.tracks.first);
     }
     if (state.isPlaying) {
       unawaited(_player.pause());

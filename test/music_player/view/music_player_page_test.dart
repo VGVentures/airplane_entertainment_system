@@ -110,6 +110,8 @@ void main() {
     testWidgets(
       'calls [MusicPlayerCubit.togglePlayPause] when play button is pressed',
       (tester) async {
+        when(() => cubit.togglePlayPause()).thenAnswer((_) async {});
+
         await tester.pumpApp(subject());
 
         await tester.tap(find.byIcon(Icons.play_arrow));
@@ -168,6 +170,8 @@ void main() {
     testWidgets(
       'calls [MusicPlayerCubit.playTrack] when track is selected',
       (tester) async {
+        when(() => cubit.playTrack(tracks[0])).thenAnswer((_) async {});
+
         await tester.pumpApp(subject());
 
         await tester.tap(find.text('Title0'));

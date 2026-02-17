@@ -31,10 +31,12 @@ void main() {
       musicRepository = MockMusicRepository();
 
       audioPlayer = MockAudioPlayer();
-      when(() => audioPlayer.onPositionChanged)
-          .thenAnswer((_) => const Stream.empty());
-      when(() => audioPlayer.onPlayerStateChanged)
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => audioPlayer.onPositionChanged,
+      ).thenAnswer((_) => const Stream.empty());
+      when(
+        () => audioPlayer.onPlayerStateChanged,
+      ).thenAnswer((_) => const Stream.empty());
       when(() => audioPlayer.play(any())).thenAnswer((_) async {});
       when(() => audioPlayer.seek(any())).thenAnswer((_) async {});
       when(audioPlayer.getDuration).thenAnswer((_) async => null);
@@ -51,9 +53,9 @@ void main() {
     });
 
     MusicPlayerCubit build() => MusicPlayerCubit(
-          musicRepository: musicRepository,
-          player: audioPlayer,
-        );
+      musicRepository: musicRepository,
+      player: audioPlayer,
+    );
 
     blocTest<MusicPlayerCubit, MusicPlayerState>(
       'updates [progress] when [onPositionChanged] emits',
@@ -61,8 +63,9 @@ void main() {
         duration: Duration(seconds: 10),
       ),
       setUp: () {
-        when(() => audioPlayer.onPositionChanged)
-            .thenAnswer((_) => Stream.value(const Duration(seconds: 1)));
+        when(
+          () => audioPlayer.onPositionChanged,
+        ).thenAnswer((_) => Stream.value(const Duration(seconds: 1)));
       },
       build: build,
       expect: () => const [
@@ -73,8 +76,9 @@ void main() {
     group('when [onPlayerStateChanged] emits', () {
       blocTest<MusicPlayerCubit, MusicPlayerState>(
         'updates [isPlaying]',
-        setUp: () => when(() => audioPlayer.onPlayerStateChanged)
-            .thenAnswer((_) => Stream.value(PlayerState.playing)),
+        setUp: () => when(
+          () => audioPlayer.onPlayerStateChanged,
+        ).thenAnswer((_) => Stream.value(PlayerState.playing)),
         build: build,
         expect: () => const [
           MusicPlayerState(isPlaying: true),
@@ -83,8 +87,9 @@ void main() {
 
       blocTest<MusicPlayerCubit, MusicPlayerState>(
         'moves to next track if state is [PlayerState.completed]',
-        setUp: () => when(() => audioPlayer.onPlayerStateChanged)
-            .thenAnswer((_) => Stream.value(PlayerState.completed)),
+        setUp: () => when(
+          () => audioPlayer.onPlayerStateChanged,
+        ).thenAnswer((_) => Stream.value(PlayerState.completed)),
         seed: () => const MusicPlayerState(
           tracks: tracks,
           currentTrackIndex: 0,
@@ -450,9 +455,9 @@ void main() {
           currentTrackIndex: 0,
         ),
         act: (cubit) => cubit.toggleLoop(),
-        verify: (_) =>
-            verify(() => audioPlayer.setReleaseMode(ReleaseMode.loop))
-                .called(1),
+        verify: (_) => verify(
+          () => audioPlayer.setReleaseMode(ReleaseMode.loop),
+        ).called(1),
       );
 
       blocTest<MusicPlayerCubit, MusicPlayerState>(
@@ -465,9 +470,9 @@ void main() {
           isLoop: true,
         ),
         act: (cubit) => cubit.toggleLoop(),
-        verify: (_) =>
-            verify(() => audioPlayer.setReleaseMode(ReleaseMode.release))
-                .called(1),
+        verify: (_) => verify(
+          () => audioPlayer.setReleaseMode(ReleaseMode.release),
+        ).called(1),
       );
     });
 

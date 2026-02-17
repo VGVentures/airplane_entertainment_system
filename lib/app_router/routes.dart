@@ -35,8 +35,7 @@ class HomeScreenRouteData extends StatefulShellRouteData {
     BuildContext context,
     GoRouterState state,
     StatefulNavigationShell navigationShell,
-  ) =>
-      navigationShell;
+  ) => navigationShell;
 
   static Widget $navigatorContainerBuilder(
     BuildContext context,

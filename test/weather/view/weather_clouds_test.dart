@@ -82,8 +82,9 @@ void main() {
       expect(clouds.style, equals(CloudStyle.medium));
     });
 
-    testWidgets('renders dark clouds when weather is thunderstorms',
-        (tester) async {
+    testWidgets('renders dark clouds when weather is thunderstorms', (
+      tester,
+    ) async {
       when(() => weatherBloc.state).thenReturn(
         const WeatherState(
           weatherInfo: WeatherInformation(

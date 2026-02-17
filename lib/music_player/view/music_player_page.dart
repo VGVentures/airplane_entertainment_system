@@ -15,8 +15,7 @@ class MusicPlayerPage extends StatelessWidget {
     return switch (layout) {
       AesLayoutData.small => const _SmallMusicPlayerPage(),
       AesLayoutData.medium ||
-      AesLayoutData.large =>
-        const _LargeMusicPlayerPage(),
+      AesLayoutData.large => const _LargeMusicPlayerPage(),
     };
   }
 }
@@ -254,19 +253,23 @@ class MusicPlayerView extends StatelessWidget {
                                   onTap: () => context
                                       .read<MusicPlayerCubit>()
                                       .togglePlayPause(),
-                                  child: BlocSelector<MusicPlayerCubit,
-                                      MusicPlayerState, bool>(
-                                    selector: (state) => state.isPlaying,
-                                    builder: (context, isPlaying) {
-                                      return Icon(
-                                        isPlaying
-                                            ? Icons.pause
-                                            : Icons.play_arrow,
-                                        size: 40,
-                                        color: Colors.white,
-                                      );
-                                    },
-                                  ),
+                                  child:
+                                      BlocSelector<
+                                        MusicPlayerCubit,
+                                        MusicPlayerState,
+                                        bool
+                                      >(
+                                        selector: (state) => state.isPlaying,
+                                        builder: (context, isPlaying) {
+                                          return Icon(
+                                            isPlaying
+                                                ? Icons.pause
+                                                : Icons.play_arrow,
+                                            size: 40,
+                                            color: Colors.white,
+                                          );
+                                        },
+                                      ),
                                 ),
                               ),
                             ),
@@ -303,21 +306,25 @@ class MusicPlayerView extends StatelessWidget {
                           color: Colors.transparent,
                           child: SizedBox(
                             width: 360,
-                            child: BlocSelector<MusicPlayerCubit,
-                                MusicPlayerState, double>(
-                              selector: (state) => state.progress,
-                              builder: (context, progress) {
-                                return Slider(
-                                  inactiveColor: Colors.grey,
-                                  activeColor: Colors.red,
-                                  thumbColor: Colors.white,
-                                  value: progress,
-                                  onChanged: (value) => context
-                                      .read<MusicPlayerCubit>()
-                                      .seek(value),
-                                );
-                              },
-                            ),
+                            child:
+                                BlocSelector<
+                                  MusicPlayerCubit,
+                                  MusicPlayerState,
+                                  double
+                                >(
+                                  selector: (state) => state.progress,
+                                  builder: (context, progress) {
+                                    return Slider(
+                                      inactiveColor: Colors.grey,
+                                      activeColor: Colors.red,
+                                      thumbColor: Colors.white,
+                                      value: progress,
+                                      onChanged: (value) => context
+                                          .read<MusicPlayerCubit>()
+                                          .seek(value),
+                                    );
+                                  },
+                                ),
                           ),
                         ),
                       ),
@@ -380,41 +387,47 @@ class MusicMenuView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20) +
+              padding:
+                  const EdgeInsets.symmetric(vertical: 20) +
                   (padding?.copyWith(bottom: 0) ?? EdgeInsets.zero),
               child: const _MusicMenuHeader(),
             ),
             Flexible(
-              child: BlocSelector<MusicPlayerCubit, MusicPlayerState,
-                  (List<MusicTrack>, MusicTrack?, bool)>(
-                selector: (state) => (
-                  state.tracks,
-                  state.currentTrack,
-                  state.isPlaying,
-                ),
-                builder: (context, state) {
-                  final (tracks, current, isPlaying) = state;
-                  return ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    padding: padding?.copyWith(top: 0),
-                    itemBuilder: (context, pos) {
-                      final track = tracks[pos];
-                      return _MusicMenuItem(
-                        track: track,
-                        isCurrent: track == current,
-                        isPlaying: isPlaying,
-                        onTap: () =>
-                            context.read<MusicPlayerCubit>().playTrack(track),
+              child:
+                  BlocSelector<
+                    MusicPlayerCubit,
+                    MusicPlayerState,
+                    (List<MusicTrack>, MusicTrack?, bool)
+                  >(
+                    selector: (state) => (
+                      state.tracks,
+                      state.currentTrack,
+                      state.isPlaying,
+                    ),
+                    builder: (context, state) {
+                      final (tracks, current, isPlaying) = state;
+                      return ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        padding: padding?.copyWith(top: 0),
+                        itemBuilder: (context, pos) {
+                          final track = tracks[pos];
+                          return _MusicMenuItem(
+                            track: track,
+                            isCurrent: track == current,
+                            isPlaying: isPlaying,
+                            onTap: () => context
+                                .read<MusicPlayerCubit>()
+                                .playTrack(track),
+                          );
+                        },
+                        separatorBuilder: (_, _) => const Divider(
+                          color: Colors.transparent,
+                        ),
+                        itemCount: tracks.length,
                       );
                     },
-                    separatorBuilder: (_, __) => const Divider(
-                      color: Colors.transparent,
-                    ),
-                    itemCount: tracks.length,
-                  );
-                },
-              ),
+                  ),
             ),
           ],
         ),

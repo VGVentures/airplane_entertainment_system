@@ -10,8 +10,8 @@ part 'weather_state.dart';
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   WeatherBloc({
     required WeatherRepository weatherRepository,
-  })  : _weatherRepository = weatherRepository,
-        super(const WeatherState()) {
+  }) : _weatherRepository = weatherRepository,
+       super(const WeatherState()) {
     on<WeatherUpdatesRequested>(_onWeatherUpdatesRequested);
   }
 

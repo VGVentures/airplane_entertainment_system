@@ -50,8 +50,9 @@ class _LargeOverviewPage extends StatelessWidget {
         const SizedBox(width: 80),
         Expanded(
           child: DashBoard(
-            padding:
-                const EdgeInsets.symmetric(vertical: 20).copyWith(right: 80),
+            padding: const EdgeInsets.symmetric(
+              vertical: 20,
+            ).copyWith(right: 80),
           ),
         ),
       ],

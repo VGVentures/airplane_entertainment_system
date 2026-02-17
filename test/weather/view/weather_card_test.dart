@@ -39,8 +39,9 @@ void main() {
       weatherBloc = _MockWeatherBloc();
     });
 
-    testWidgets('renders a loading indicator when status is initial',
-        (tester) async {
+    testWidgets('renders a loading indicator when status is initial', (
+      tester,
+    ) async {
       when(() => weatherBloc.state).thenReturn(const WeatherState());
 
       await tester.pumpApp(
@@ -53,8 +54,9 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('renders a error message when status is initial',
-        (tester) async {
+    testWidgets('renders a error message when status is initial', (
+      tester,
+    ) async {
       when(() => weatherBloc.state).thenReturn(
         const WeatherState(
           status: WeatherStatus.error,
@@ -72,8 +74,9 @@ void main() {
     });
 
     for (final information in weatherInformation) {
-      testWidgets('renders a ${information.condition} weather card',
-          (tester) async {
+      testWidgets('renders a ${information.condition} weather card', (
+        tester,
+      ) async {
         when(() => weatherBloc.state).thenReturn(
           WeatherState(
             weatherInfo: information,

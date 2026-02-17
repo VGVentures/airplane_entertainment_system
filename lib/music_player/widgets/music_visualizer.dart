@@ -139,7 +139,7 @@ class MusicVisualizerState extends State<MusicVisualizer>
 
 class _MusicVisualizerPainter extends CustomPainter {
   _MusicVisualizerPainter({required List<double> channels})
-      : _channels = channels;
+    : _channels = channels;
 
   static const _innerRadius = 160.0;
   static const _outerRadius = 200.0;

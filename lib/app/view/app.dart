@@ -16,11 +16,11 @@ class App extends StatelessWidget {
     required FlightInformationRepository flightInformationRepository,
     required AppRouter appRouter,
     super.key,
-  })  : _weatherRepository = weatherRepository,
-        _musicRepository = musicRepository,
-        _audioPlayer = audioPlayer,
-        _flightInformationRepository = flightInformationRepository,
-        _appRouter = appRouter;
+  }) : _weatherRepository = weatherRepository,
+       _musicRepository = musicRepository,
+       _audioPlayer = audioPlayer,
+       _flightInformationRepository = flightInformationRepository,
+       _appRouter = appRouter;
 
   final WeatherRepository _weatherRepository;
   final MusicRepository _musicRepository;

@@ -23,11 +23,13 @@ void main() {
       expect(find.byType(FlightTrackingCard), findsOneWidget);
     });
 
-    testWidgets('renders CircularProgressIndicator when initial state',
-        (tester) async {
+    testWidgets('renders CircularProgressIndicator when initial state', (
+      tester,
+    ) async {
       final FlightTrackingBloc flightTrackingBloc = _MockFlightTrackingBloc();
-      when(() => flightTrackingBloc.state)
-          .thenReturn(const FlightTrackingState());
+      when(
+        () => flightTrackingBloc.state,
+      ).thenReturn(const FlightTrackingState());
 
       await tester.pumpApp(
         BlocProvider.value(
@@ -39,8 +41,9 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('renders flight information when status is updating',
-        (tester) async {
+    testWidgets('renders flight information when status is updating', (
+      tester,
+    ) async {
       final FlightTrackingBloc flightTrackingBloc = _MockFlightTrackingBloc();
       when(() => flightTrackingBloc.state).thenReturn(
         FlightTrackingState(

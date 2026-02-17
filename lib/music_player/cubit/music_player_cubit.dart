@@ -11,13 +11,15 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
   MusicPlayerCubit({
     required MusicRepository musicRepository,
     required AudioPlayer player,
-  })  : _musicRepository = musicRepository,
-        _player = player,
-        super(const MusicPlayerState()) {
-    _isPlayingSubscription =
-        _player.onPlayerStateChanged.listen(_onIsPlayingChanged);
-    _progressSubscription =
-        _player.onPositionChanged.listen(_onProgressChanged);
+  }) : _musicRepository = musicRepository,
+       _player = player,
+       super(const MusicPlayerState()) {
+    _isPlayingSubscription = _player.onPlayerStateChanged.listen(
+      _onIsPlayingChanged,
+    );
+    _progressSubscription = _player.onPositionChanged.listen(
+      _onProgressChanged,
+    );
 
     unawaited(_player.setVolume(1));
   }
@@ -101,8 +103,9 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     if (currentTrackIndex == null) return 0;
 
     if (state.isShuffle) {
-      final currentShuffleIndex =
-          state.shuffleIndexes.indexOf(currentTrackIndex);
+      final currentShuffleIndex = state.shuffleIndexes.indexOf(
+        currentTrackIndex,
+      );
       final nextShuffleIndex =
           (currentShuffleIndex + 1) % state.shuffleIndexes.length;
       return state.shuffleIndexes[nextShuffleIndex];
@@ -127,8 +130,9 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     if (currentTrackIndex == null) return 0;
 
     if (state.isShuffle) {
-      final currentShuffleIndex =
-          state.shuffleIndexes.indexOf(currentTrackIndex);
+      final currentShuffleIndex = state.shuffleIndexes.indexOf(
+        currentTrackIndex,
+      );
       final previousShuffleIndex = currentShuffleIndex == 0
           ? state.shuffleIndexes.length - 1
           : currentShuffleIndex - 1;
@@ -151,8 +155,10 @@ class MusicPlayerCubit extends Cubit<MusicPlayerState> {
     if (state.isShuffle) {
       emit(state.copyWith(shuffleIndexes: []));
     } else {
-      final shuffledIndexes =
-          List<int>.generate(state.tracks.length, (index) => index)..shuffle();
+      final shuffledIndexes = List<int>.generate(
+        state.tracks.length,
+        (index) => index,
+      )..shuffle();
       emit(state.copyWith(shuffleIndexes: shuffledIndexes));
     }
   }

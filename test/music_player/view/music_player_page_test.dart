@@ -43,29 +43,31 @@ void main() {
       expect(find.byType(MusicPlayerView), findsOneWidget);
     });
 
-    testWidgets('when screen size is small, player is shown in a bottom sheet',
-        (tester) async {
-      await tester.pumpApp(
-        Scaffold(
-          body: BlocProvider.value(
-            value: cubit,
-            child: const MusicPlayerPage(),
+    testWidgets(
+      'when screen size is small, player is shown in a bottom sheet',
+      (tester) async {
+        await tester.pumpApp(
+          Scaffold(
+            body: BlocProvider.value(
+              value: cubit,
+              child: const MusicPlayerPage(),
+            ),
           ),
-        ),
-        layout: AesLayoutData.small,
-      );
+          layout: AesLayoutData.small,
+        );
 
-      final playerFinder = find.byType(MusicPlayerView);
-      expect(playerFinder, findsNothing);
+        final playerFinder = find.byType(MusicPlayerView);
+        expect(playerFinder, findsNothing);
 
-      final buttonFinder = find.byType(MusicFloatingButton);
-      expect(buttonFinder, findsOneWidget);
+        final buttonFinder = find.byType(MusicFloatingButton);
+        expect(buttonFinder, findsOneWidget);
 
-      await tester.tap(buttonFinder);
-      await tester.pumpAndSettle();
+        await tester.tap(buttonFinder);
+        await tester.pumpAndSettle();
 
-      expect(playerFinder, findsOneWidget);
-    });
+        expect(playerFinder, findsOneWidget);
+      },
+    );
   });
 
   group('MusicPlayerView', () {

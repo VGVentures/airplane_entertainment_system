@@ -166,7 +166,7 @@ class _AnimatedBranchContainer extends StatelessWidget {
 
     return Stack(
       children: children.mapIndexed(
-        (int index, Widget navigator) {
+        (index, navigator) {
           return AnimatedSlide(
             duration: const Duration(milliseconds: 600),
             curve: index == currentIndex ? Curves.easeOut : Curves.easeInOut,

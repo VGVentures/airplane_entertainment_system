@@ -7,6 +7,15 @@ environment:
   sdk: 3.11.0
   flutter: 3.41.2
 
+workspace:
+  - packages/aes_ui
+  - packages/flight_api_client
+  - packages/flight_information_repository
+  - packages/music_repository
+  - packages/music_visualizer_generator
+  - packages/weather_api_client
+  - packages/weather_repository
+
 dependencies:
   aes_ui:
     path: packages/aes_ui

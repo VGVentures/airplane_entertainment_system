@@ -21,7 +21,7 @@ class AesTheme {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: WidgetStateProperty.resolveWith<IconThemeData?>(
-          (Set<WidgetState> states) => states.contains(WidgetState.selected)
+          (states) => states.contains(WidgetState.selected)
               ? const IconThemeData(color: Colors.red)
               : const IconThemeData(color: Colors.black),
         ),

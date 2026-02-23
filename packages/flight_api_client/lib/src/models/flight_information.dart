@@ -31,10 +31,10 @@ class FlightInformation extends Equatable {
 
   @override
   List<Object> get props => [
-        departureAirport,
-        arrivalAirport,
-        departureTime,
-        arrivalTime,
-        timestamp,
-      ];
+    departureAirport,
+    arrivalAirport,
+    departureTime,
+    arrivalTime,
+    timestamp,
+  ];
 }

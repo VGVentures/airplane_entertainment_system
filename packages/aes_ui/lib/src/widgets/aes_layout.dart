@@ -17,7 +17,8 @@ enum AesLayoutData {
   /// A large layout.
   ///
   /// Typically used for desktops.
-  large;
+  large
+  ;
 
   /// Derives the layout from the given [windowSize].
   static AesLayoutData _derive(Size windowSize) {
@@ -68,8 +69,8 @@ class AesLayout extends StatelessWidget {
 
   /// Retrieves the closest [_AesLayoutScope] from the given [context].
   static AesLayoutData of(BuildContext context) {
-    final layout =
-        context.dependOnInheritedWidgetOfExactType<_AesLayoutScope>();
+    final layout = context
+        .dependOnInheritedWidgetOfExactType<_AesLayoutScope>();
     assert(layout != null, 'No AesLayout found in context');
     return layout!.layout;
   }

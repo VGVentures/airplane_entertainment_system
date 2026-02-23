@@ -58,8 +58,7 @@ void main() {
         expect(next, equals(weatherInfos[1]));
       });
 
-      test(
-          'returns first [WeatherInfo] when current is second one and random '
+      test('returns first [WeatherInfo] when current is second one and random '
           'returns 0', () {
         when(() => random.nextInt(any())).thenReturn(0);
 
@@ -71,8 +70,7 @@ void main() {
         expect(next, equals(weatherInfos.first));
       });
 
-      test(
-          'returns third [WeatherInfo] when current is second one and random '
+      test('returns third [WeatherInfo] when current is second one and random '
           'returns 1', () {
         when(() => random.nextInt(any())).thenReturn(1);
 

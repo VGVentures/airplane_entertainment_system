@@ -7,7 +7,9 @@ class MuteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mute = context.select((MusicPlayerCubit cubit) => cubit.state.mute);
+    final mute = context.select<MusicPlayerCubit, bool>(
+      (cubit) => cubit.state.mute,
+    );
 
     return IconButton(
       onPressed: () async {

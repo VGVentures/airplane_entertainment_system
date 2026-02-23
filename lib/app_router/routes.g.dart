@@ -7,33 +7,33 @@ part of 'routes.dart';
 // **************************************************************************
 
 List<RouteBase> get $appRoutes => [
-      $homeScreenRouteData,
-    ];
+  $homeScreenRouteData,
+];
 
 RouteBase get $homeScreenRouteData => StatefulShellRouteData.$route(
-      navigatorContainerBuilder: HomeScreenRouteData.$navigatorContainerBuilder,
-      factory: $HomeScreenRouteDataExtension._fromState,
-      branches: [
-        StatefulShellBranchData.$branch(
-          routes: [
-            GoRouteData.$route(
-              path: '/overview',
-              name: 'overview',
-              factory: $OverviewPageRouteData._fromState,
-            ),
-          ],
-        ),
-        StatefulShellBranchData.$branch(
-          routes: [
-            GoRouteData.$route(
-              path: '/music',
-              name: 'music',
-              factory: $MusicPlayerPageRouteData._fromState,
-            ),
-          ],
+  navigatorContainerBuilder: HomeScreenRouteData.$navigatorContainerBuilder,
+  factory: $HomeScreenRouteDataExtension._fromState,
+  branches: [
+    StatefulShellBranchData.$branch(
+      routes: [
+        GoRouteData.$route(
+          path: '/overview',
+          name: 'overview',
+          factory: $OverviewPageRouteData._fromState,
         ),
       ],
-    );
+    ),
+    StatefulShellBranchData.$branch(
+      routes: [
+        GoRouteData.$route(
+          path: '/music',
+          name: 'music',
+          factory: $MusicPlayerPageRouteData._fromState,
+        ),
+      ],
+    ),
+  ],
+);
 
 extension $HomeScreenRouteDataExtension on HomeScreenRouteData {
   static HomeScreenRouteData _fromState(GoRouterState state) =>
@@ -46,8 +46,8 @@ mixin $OverviewPageRouteData on GoRouteData {
 
   @override
   String get location => GoRouteData.$location(
-        '/overview',
-      );
+    '/overview',
+  );
 
   @override
   void go(BuildContext context) => context.go(location);
@@ -69,8 +69,8 @@ mixin $MusicPlayerPageRouteData on GoRouteData {
 
   @override
   String get location => GoRouteData.$location(
-        '/music',
-      );
+    '/music',
+  );
 
   @override
   void go(BuildContext context) => context.go(location);

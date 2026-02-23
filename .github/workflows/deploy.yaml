@@ -21,6 +21,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Build Flutter app
         uses: subosito/flutter-action@v2
+        with: 
+          flutter-version: 3.41.2
       - run: flutter pub get
       - run: flutter build web -t lib/main_production.dart
       - name: Upload Pages artifact

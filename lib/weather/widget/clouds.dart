@@ -88,12 +88,15 @@ class _CloudBackgroundState extends State<Clouds>
 
   Future<void> _renderClouds() async {
     final (light, medium, dark) = await (
-      CloudGenerator(color: Colors.white)
-          .generate(widget.count, widget.averageScale),
-      CloudGenerator(color: Colors.grey[400]!)
-          .generate(widget.count, widget.averageScale),
-      CloudGenerator(color: Colors.grey[600]!)
-          .generate(widget.count, widget.averageScale),
+      CloudGenerator(
+        color: Colors.white,
+      ).generate(widget.count, widget.averageScale),
+      CloudGenerator(
+        color: Colors.grey[400]!,
+      ).generate(widget.count, widget.averageScale),
+      CloudGenerator(
+        color: Colors.grey[600]!,
+      ).generate(widget.count, widget.averageScale),
     ).wait;
 
     clouds[CloudStyle.light] = light;

@@ -42,17 +42,20 @@ void main() {
 
     setUp(() {
       weatherRepository = MockWeatherRepository();
-      when(() => weatherRepository.weatherInformation)
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => weatherRepository.weatherInformation,
+      ).thenAnswer((_) => const Stream.empty());
 
       musicRepository = MockMusicRepository();
       when(musicRepository.getTracks).thenReturn(const []);
 
       audioPlayer = _MockAudioPlayer();
-      when(() => audioPlayer.onPositionChanged)
-          .thenAnswer((_) => const Stream.empty());
-      when(() => audioPlayer.onPlayerStateChanged)
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => audioPlayer.onPositionChanged,
+      ).thenAnswer((_) => const Stream.empty());
+      when(
+        () => audioPlayer.onPlayerStateChanged,
+      ).thenAnswer((_) => const Stream.empty());
       when(audioPlayer.release).thenAnswer((_) async {});
 
       final audioCache = _MockAudioCache();
@@ -70,8 +73,9 @@ void main() {
       when(() => navigationShell.currentIndex).thenReturn(0);
     });
 
-    testWidgets('finds one $AirplaneEntertainmentSystemView Widget',
-        (tester) async {
+    testWidgets('finds one $AirplaneEntertainmentSystemView Widget', (
+      tester,
+    ) async {
       await tester.pumpApp(
         AirplaneEntertainmentSystemScreen(
           navigationShell: navigationShell,
@@ -121,8 +125,9 @@ void main() {
       expect(find.byType(AesNavigationRail), findsOneWidget);
     });
 
-    testWidgets('shows $AesBottomNavigationBar on small screens',
-        (tester) async {
+    testWidgets('shows $AesBottomNavigationBar on small screens', (
+      tester,
+    ) async {
       await tester.pumpSubject(
         AirplaneEntertainmentSystemView(
           navigationShell,
@@ -181,13 +186,15 @@ void main() {
 
       expect(
         tester.widget(find.byType(NavigationBar)),
-        isA<NavigationBar>()
-            .having((widget) => widget.selectedIndex, 'index', 0),
+        isA<NavigationBar>().having(
+          (widget) => widget.selectedIndex,
+          'index',
+          0,
+        ),
       );
     });
 
-    testWidgets(
-        'verify navigation to $MusicPlayerPage '
+    testWidgets('verify navigation to $MusicPlayerPage '
         'when icon is selected', (tester) async {
       await tester.pumpSubject(
         AirplaneEntertainmentSystemView(
@@ -207,8 +214,7 @@ void main() {
     });
 
     for (final layout in AesLayoutData.values) {
-      testWidgets(
-          'verify navigation to $OverviewPage when icon is '
+      testWidgets('verify navigation to $OverviewPage when icon is '
           'selected for $layout layout', (tester) async {
         await tester.pumpSubject(
           AirplaneEntertainmentSystemView(
@@ -229,8 +235,9 @@ void main() {
         await tester.tap(find.byIcon(Icons.airplanemode_active_outlined));
         await tester.pump(const Duration(milliseconds: 300));
 
-        verify(() => navigationShell.goBranch(0, initialLocation: true))
-            .called(1);
+        verify(
+          () => navigationShell.goBranch(0, initialLocation: true),
+        ).called(1);
       });
     }
   });

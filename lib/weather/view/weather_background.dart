@@ -26,17 +26,17 @@ class WeatherBackground extends StatelessWidget {
         ];
         final colors = switch (state.weatherInfo?.condition) {
           WeatherCondition.rainy => [
-              const Color(0xFFC3EFEC),
-              const Color(0xFF3287A1),
-            ],
+            const Color(0xFFC3EFEC),
+            const Color(0xFF3287A1),
+          ],
           WeatherCondition.thunderstorms => [
-              const Color(0xFFB7CAC8),
-              const Color(0xFF7D909A),
-            ],
+            const Color(0xFFB7CAC8),
+            const Color(0xFF7D909A),
+          ],
           _ => [
-              const Color(0xffb1fff8),
-              const Color(0xFF00A8DC),
-            ]
+            const Color(0xffb1fff8),
+            const Color(0xFF00A8DC),
+          ],
         };
 
         return AnimatedContainer(

@@ -38,9 +38,9 @@ class FlightTrackingState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        flightInformation,
-        remainingTime,
-        percentComplete,
-      ];
+    status,
+    flightInformation,
+    remainingTime,
+    percentComplete,
+  ];
 }

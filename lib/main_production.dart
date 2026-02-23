@@ -18,8 +18,9 @@ void main() {
       final weatherRepository = WeatherRepository(WeatherApiClient());
       final musicRepository = MusicRepository();
       final audioPlayer = AudioPlayer();
-      final flightInformationRepository =
-          FlightInformationRepository(FlightApiClient());
+      final flightInformationRepository = FlightInformationRepository(
+        FlightApiClient(),
+      );
       final appRouter = AppRouter(
         navigatorKey: GlobalKey<NavigatorState>(),
         debugLogDiagnostics: kDebugMode,

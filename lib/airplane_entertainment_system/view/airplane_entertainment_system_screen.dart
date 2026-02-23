@@ -173,13 +173,13 @@ class _AnimatedBranchContainer extends StatelessWidget {
             offset: Offset(
               axis == Axis.horizontal
                   ? index == currentIndex
-                      ? 0
-                      : 0.25
+                        ? 0
+                        : 0.25
                   : 0,
               axis == Axis.vertical
                   ? index == currentIndex
-                      ? 0
-                      : 0.25
+                        ? 0
+                        : 0.25
                   : 0,
             ),
             child: AnimatedOpacity(

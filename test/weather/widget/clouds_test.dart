@@ -39,8 +39,9 @@ void main() {
       expect(cloudsFinder, findsOneWidget);
     });
 
-    testWidgets('renders no clouds if style is [CloudStyle.none]',
-        (tester) async {
+    testWidgets('renders no clouds if style is [CloudStyle.none]', (
+      tester,
+    ) async {
       await tester.pumpApp(
         const Clouds(
           count: 1,

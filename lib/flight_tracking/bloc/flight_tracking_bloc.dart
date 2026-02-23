@@ -9,8 +9,8 @@ class FlightTrackingBloc
     extends Bloc<FlightTrackingEvent, FlightTrackingState> {
   FlightTrackingBloc({
     required FlightInformationRepository flightProgressRepository,
-  })  : _flightInformationRepository = flightProgressRepository,
-        super(const FlightTrackingState()) {
+  }) : _flightInformationRepository = flightProgressRepository,
+       super(const FlightTrackingState()) {
     on<FlightTrackingUpdatesRequested>(_onFlightTrackingUpdatesRequested);
   }
 
@@ -25,17 +25,19 @@ class FlightTrackingBloc
       onData: (flightInformation) {
         final remainingTime =
             flightInformation.timestamp.isAfter(flightInformation.arrivalTime)
-                ? Duration.zero
-                : flightInformation.arrivalTime
-                    .difference(flightInformation.timestamp);
+            ? Duration.zero
+            : flightInformation.arrivalTime.difference(
+                flightInformation.timestamp,
+              );
 
-        final percentComplete = (100 -
-                remainingTime.inMinutes /
-                    flightInformation.arrivalTime
-                        .difference(flightInformation.departureTime)
-                        .inMinutes *
-                    100)
-            .toInt();
+        final percentComplete =
+            (100 -
+                    remainingTime.inMinutes /
+                        flightInformation.arrivalTime
+                            .difference(flightInformation.departureTime)
+                            .inMinutes *
+                        100)
+                .toInt();
 
         return state.copyWith(
           status: TrackingStatus.updating,

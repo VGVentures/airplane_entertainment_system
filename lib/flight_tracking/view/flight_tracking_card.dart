@@ -220,10 +220,10 @@ class _RemainingTimeIndicator extends StatelessWidget {
 
 class _FlightProgress extends StatelessWidget {
   const _FlightProgress(this.progress)
-      : assert(
-          progress >= 0 && progress <= 100,
-          'Progress must be between 0 and 100',
-        );
+    : assert(
+        progress >= 0 && progress <= 100,
+        'Progress must be between 0 and 100',
+      );
 
   final int progress;
 

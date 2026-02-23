@@ -29,15 +29,15 @@ class MusicPlayerState extends Equatable {
 
   @override
   List<Object?> get props => [
-        tracks,
-        currentTrackIndex,
-        isPlaying,
-        duration,
-        progress,
-        isLoop,
-        shuffleIndexes,
-        mute,
-      ];
+    tracks,
+    currentTrackIndex,
+    isPlaying,
+    duration,
+    progress,
+    isLoop,
+    shuffleIndexes,
+    mute,
+  ];
 
   MusicPlayerState copyWith({
     List<MusicTrack>? tracks,

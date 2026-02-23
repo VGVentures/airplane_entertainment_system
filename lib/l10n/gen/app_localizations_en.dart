@@ -47,12 +47,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thunderstorms => 'Thunderstorms';
 
   @override
-  String get weatherErrorMessage =>
-      'Uh oh! There was an error while fetching the weather information.';
+  String get weatherErrorMessage => 'Uh oh! There was an error while fetching the weather information.';
 
   @override
-  String get trackingErrorMessage =>
-      'Uh oh! There was an error while fetching the flight information.';
+  String get trackingErrorMessage => 'Uh oh! There was an error while fetching the flight information.';
 
   @override
   String get overviewLabel => 'Home';

@@ -6,9 +6,7 @@ part of 'routes.dart';
 // GoRouterGenerator
 // **************************************************************************
 
-List<RouteBase> get $appRoutes => [
-  $homeScreenRouteData,
-];
+List<RouteBase> get $appRoutes => [$homeScreenRouteData];
 
 RouteBase get $homeScreenRouteData => StatefulShellRouteData.$route(
   navigatorContainerBuilder: HomeScreenRouteData.$navigatorContainerBuilder,
@@ -45,9 +43,7 @@ mixin $OverviewPageRouteData on GoRouteData {
       const OverviewPageRouteData();
 
   @override
-  String get location => GoRouteData.$location(
-    '/overview',
-  );
+  String get location => GoRouteData.$location('/overview');
 
   @override
   void go(BuildContext context) => context.go(location);
@@ -68,9 +64,7 @@ mixin $MusicPlayerPageRouteData on GoRouteData {
       const MusicPlayerPageRouteData();
 
   @override
-  String get location => GoRouteData.$location(
-    '/music',
-  );
+  String get location => GoRouteData.$location('/music');
 
   @override
   void go(BuildContext context) => context.go(location);

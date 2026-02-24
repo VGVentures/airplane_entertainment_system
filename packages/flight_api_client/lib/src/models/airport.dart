@@ -18,7 +18,7 @@ class Airport extends Equatable {
 
   @override
   List<Object> get props => [
-        city,
-        code,
-      ];
+    city,
+    code,
+  ];
 }

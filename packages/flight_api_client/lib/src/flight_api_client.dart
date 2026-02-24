@@ -49,8 +49,9 @@ class FlightApiClient {
 
     _timestamp = _timestamp.add(_updateInterval);
 
-    final updatedArrivalTime =
-        _arrivalTime.add(Duration(minutes: random.nextInt(3)));
+    final updatedArrivalTime = _arrivalTime.add(
+      Duration(minutes: random.nextInt(3)),
+    );
 
     if (_timestamp.isAfter(updatedArrivalTime)) {
       _timer?.cancel();

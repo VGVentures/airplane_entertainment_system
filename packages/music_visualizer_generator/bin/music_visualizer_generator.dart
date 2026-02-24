@@ -67,7 +67,7 @@ void main(List<String> argv) async {
   final spectrogram = <List<double>>[];
   stft.run(
     audio,
-    (Float64x2List chunk) {
+    (chunk) {
       final spectrogramRow = <double>[];
       final amp = chunk.discardConjugates().magnitudes();
       logItr ??= linSpace(amp.length, buckets);

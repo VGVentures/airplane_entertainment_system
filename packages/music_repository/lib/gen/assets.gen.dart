@@ -35,8 +35,13 @@ class $LibTracksGen {
   String get windyOldWeather => 'lib/tracks/Windy Old Weather.mp3';
 
   /// List of all assets
-  List<String> get values =>
-      [arpent, groovin, motions, tripUpNorth, windyOldWeather];
+  List<String> get values => [
+    arpent,
+    groovin,
+    motions,
+    tripUpNorth,
+    windyOldWeather,
+  ];
 }
 
 class Assets {

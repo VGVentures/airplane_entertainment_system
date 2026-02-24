@@ -20,9 +20,9 @@ dependencies:
   aes_ui:
     path: packages/aes_ui
   audioplayers: ^6.5.1
-  bloc: ^9.0.0
+  bloc: ^9.2.0
   collection: ^1.19.1
-  equatable: ^2.0.7
+  equatable: ^2.0.8
   flight_api_client:
     path: packages/flight_api_client
   flight_information_repository:
@@ -32,7 +32,7 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
-  go_router: ^16.2.2
+  go_router: ^17.1.0
   intl: ^0.20.2
   music_repository:
     path: packages/music_repository
@@ -43,16 +43,13 @@ dependencies:
 
 dev_dependencies:
   bloc_test: ^10.0.0
-  build_runner: ^2.7.1
+  build_runner: ^2.11.1
   flutter_gen_runner: ^5.12.0
   flutter_test:
     sdk: flutter
-  go_router_builder: ^4.0.1
+  go_router_builder: ^4.2.0
   mocktail: ^1.0.4
   very_good_analysis: ^10.2.0
-
-dependency_overrides:
-  meta: ^1.17.0
 
 flutter:
   uses-material-design: true

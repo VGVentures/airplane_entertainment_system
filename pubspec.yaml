@@ -19,7 +19,7 @@ workspace:
 dependencies:
   aes_ui:
     path: packages/aes_ui
-  audioplayers: ^6.5.1
+  audioplayers: ^6.6.0
   bloc: ^9.2.0
   collection: ^1.19.1
   equatable: ^2.0.8

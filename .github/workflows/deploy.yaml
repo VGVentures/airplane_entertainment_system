@@ -26,7 +26,7 @@ jobs:
       - run: flutter pub get
       - run: flutter build web -t lib/main_production.dart
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: build/web/
 
